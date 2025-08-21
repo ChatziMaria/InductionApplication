@@ -33,7 +33,7 @@ public class BonusController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBonus(@PathVariable Long id , @RequestBody Bonus bonus){
+    public ResponseEntity<Void> deleteBonus(@PathVariable Long id){
         bonusService.deleteBonus(id);
         return ResponseEntity.noContent().build();
     }

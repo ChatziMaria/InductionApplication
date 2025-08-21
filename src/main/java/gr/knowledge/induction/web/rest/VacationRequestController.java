@@ -36,7 +36,7 @@ public class VacationRequestController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVacationRequest(@PathVariable Long id, @RequestBody VacationRequest vacationRequest){
+    public ResponseEntity<Void> deleteVacationRequest(@PathVariable Long id){
         vacationRequestService.deleteVacationRequest(id);
         return ResponseEntity.noContent().build();
     }

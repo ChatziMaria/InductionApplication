@@ -39,7 +39,7 @@ public class EmployeeProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id,@RequestBody Employee employee){
+    public ResponseEntity<Void> deleteEmployee(@PathVariable Long id){
         employeeProductService.deleteEmployeeProduct(id);
         return ResponseEntity.noContent().build();
 
