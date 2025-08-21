@@ -13,5 +13,6 @@ public interface VacationRequestService {
     VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest);
     void  deleteVacationRequest(Long id);
     VacationRequest requestVacation(VacationRequest vacationRequest);
-    VacationRequest acceptOrReject(VacationRequest vacationRequest);
+    VacationRequest handleRequest(VacationRequest vacationRequest);
+
 }

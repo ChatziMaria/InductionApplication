@@ -92,29 +92,43 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         return vacationRequestRepository.save(vacationRequest);
     }
 
+
     @Override
-    public VacationRequest acceptOrReject(VacationRequest vacationRequest){
+    public VacationRequest handleRequest(VacationRequest vacationRequest){
 
         VacationRequest currentVacationRequest = getVacationRequestById(vacationRequest.getId());
-
         Long employeeId = vacationRequest.getEmployee().getId();
         Employee employee = employeeService.getEmployeeById(employeeId);
-
 
         int availableDays = employee.getVacationDays();
         int requestedDays = vacationRequest.getDays();
 
-
         if(requestedDays <= availableDays){
-            employee.setVacationDays(availableDays -= requestedDays);
-            vacationRequest.setStatus(VacationStatus.APPROVED);
-            employeeService.saveEmployee(employee);
+            acceptRequest(vacationRequest, employee);
         }
         else {
-            vacationRequest.setStatus(VacationStatus.REJECTED);
+            rejectRequest(vacationRequest);
 
         }
 
         return vacationRequestRepository.save(vacationRequest);
+    }
+
+
+    private void acceptRequest(VacationRequest vacationRequest, Employee employee){
+
+        int availableDays = employee.getVacationDays();
+        int requestedDays = vacationRequest.getDays();
+
+        employee.setVacationDays(availableDays -= requestedDays);
+        vacationRequest.setStatus(VacationStatus.APPROVED);
+        employeeService.saveEmployee(employee);
+
+    }
+
+    private void rejectRequest(VacationRequest vacationRequest){
+
+        vacationRequest.setStatus(VacationStatus.REJECTED);
+
     }
 }

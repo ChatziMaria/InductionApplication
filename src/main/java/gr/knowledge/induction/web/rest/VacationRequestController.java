@@ -56,9 +56,9 @@ public class VacationRequestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(processedRequest);
     }
 
-    @PutMapping("/aOrR")
-    public ResponseEntity<VacationRequest> acceptOrReject(@RequestBody VacationRequest vacationRequest){
-        VacationRequest updatedVacationRequest = vacationRequestService.acceptOrReject(vacationRequest);
+    @PutMapping("/handleRequest")
+    public  ResponseEntity<VacationRequest> handleRequest(@RequestBody VacationRequest vacationRequest){
+        VacationRequest updatedVacationRequest = vacationRequestService.handleRequest(vacationRequest);
         return ResponseEntity.ok(updatedVacationRequest);
     }
 }
