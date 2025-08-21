@@ -25,8 +25,8 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product, Long id){
-        Product createdProduct = productService.createProduct(product, id);
+    public ResponseEntity<Product> createProduct(@RequestBody Product product){
+        Product createdProduct = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
@@ -45,7 +45,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(@RequestBody Product product){
+    public ResponseEntity<List<Product>> getAllProducts(){
         List<Product> gotAllProducts = productService.getAllProducts();
         return ResponseEntity.ok( gotAllProducts);
     }

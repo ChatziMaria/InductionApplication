@@ -22,9 +22,9 @@ public class VacationRequestController {
     }
 
     @PostMapping
-    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest, Long id){
+    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest){
 
-        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, id);
+        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVacationRequest);
     }
 
@@ -42,7 +42,7 @@ public class VacationRequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VacationRequest>> getAllVacationRequests(@RequestBody VacationRequest vacationRequest){
+    public ResponseEntity<List<VacationRequest>> getAllVacationRequests(){
         List<VacationRequest> gotAllVacationRequests = vacationRequestService.getAllVacationRequests();
         return ResponseEntity.ok( gotAllVacationRequests);
     }

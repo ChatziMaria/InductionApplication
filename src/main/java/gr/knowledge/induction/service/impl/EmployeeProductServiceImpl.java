@@ -26,7 +26,7 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     }
 
     @Override
-    public EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct, Long id){
+    public EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct){
         return  employeeProductRepository.save(employeeProduct);
     }
 

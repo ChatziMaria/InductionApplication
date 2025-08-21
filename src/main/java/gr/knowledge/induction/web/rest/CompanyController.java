@@ -41,7 +41,7 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> getAllCompanies(@RequestBody Company company){
+    public ResponseEntity<List<Company>> getAllCompanies(){
         List<Company> gotAllCompanies = companyService.getAllCompanies();
         return ResponseEntity.ok( gotAllCompanies);
     }

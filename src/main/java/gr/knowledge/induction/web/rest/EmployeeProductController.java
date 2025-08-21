@@ -25,8 +25,8 @@ public class EmployeeProductController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeProduct> createEmployeeProduct(@RequestBody EmployeeProduct employeeProduct, Long id){
-        EmployeeProduct createdEmployeeProduct = employeeProductService.createEmployeeProduct(employeeProduct, id);
+    public ResponseEntity<EmployeeProduct> createEmployeeProduct(@RequestBody EmployeeProduct employeeProduct){
+        EmployeeProduct createdEmployeeProduct = employeeProductService.createEmployeeProduct(employeeProduct);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployeeProduct);
     };
 
@@ -46,7 +46,7 @@ public class EmployeeProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeProduct>> getAllEmployeeProducts(@RequestBody EmployeeProduct employeeProduct){
+    public ResponseEntity<List<EmployeeProduct>> getAllEmployeeProducts(){
         List<EmployeeProduct> gotAllEmployeeProducts = employeeProductService.getAllEmployeeProducts();
         return ResponseEntity.ok( gotAllEmployeeProducts);
     }

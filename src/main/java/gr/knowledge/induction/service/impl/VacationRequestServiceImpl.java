@@ -27,7 +27,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
     @Override
-    public VacationRequest createVacationRequest(VacationRequest vacationRequest, Long Id) {
+    public VacationRequest createVacationRequest(VacationRequest vacationRequest) {
 
         return vacationRequestRepository.save(vacationRequest);
     }

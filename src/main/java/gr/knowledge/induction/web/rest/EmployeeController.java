@@ -23,8 +23,8 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee, Long id){
-        Employee createdEmployee = employeeService.createEmployee(employee, id);
+    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
+        Employee createdEmployee = employeeService.createEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
     }
 
@@ -43,7 +43,7 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees(@RequestBody Employee employee){
+    public ResponseEntity<List<Employee>> getAllEmployees(){
         List<Employee> gotAllEmployees = employeeService.getAllEmployees();
         return ResponseEntity.ok( gotAllEmployees);
     }

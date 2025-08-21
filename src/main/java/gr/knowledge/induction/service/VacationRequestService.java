@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface VacationRequestService {
 
-    VacationRequest createVacationRequest(VacationRequest vacationRequest, Long Id);
+    VacationRequest createVacationRequest(VacationRequest vacationRequest);
     List<VacationRequest> getAllVacationRequests();
     VacationRequest getVacationRequestById(Long id);
     VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest);

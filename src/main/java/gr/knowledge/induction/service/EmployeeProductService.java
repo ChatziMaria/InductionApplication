@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface EmployeeProductService {
 
-    EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct, Long id);
+    EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct);
     List<EmployeeProduct> getAllEmployeeProducts();
     EmployeeProduct getEmployeeProductById(Long id);
     EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct);
