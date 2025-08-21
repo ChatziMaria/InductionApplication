@@ -47,11 +47,9 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
 
         EmployeeProduct currentEmployeeProduct = getEmployeeProductById(id);
 
-        EmployeeProduct result = new EmployeeProduct();
 
-        result.setId(currentEmployeeProduct.getId());
-        result.setEmployee(employeeProduct.getEmployee());
-        result.setProduct(employeeProduct.getProduct());
+        currentEmployeeProduct.setEmployee(employeeProduct.getEmployee());
+        currentEmployeeProduct.setProduct(employeeProduct.getProduct());
 
         return employeeProductRepository.save(employeeProduct);
     }

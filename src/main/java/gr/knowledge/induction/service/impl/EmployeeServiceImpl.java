@@ -50,20 +50,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee currentEmployee = getEmployeeById(id);
 
-        Employee result = new Employee();
-
-        result.setId(currentEmployee.getId());
-        result.setName(employee.getName());
-        result.setSurname(employee.getSurname());
-        result.setEmail(employee.getEmail());
-        result.setStartDate(employee.getStartDate());
-        result.setVacationDays(employee.getVacationDays());
-        result.setSalary(employee.getSalary());
-        result.setEmploymentType((employee.getEmploymentType()));
-        result.setCompany(employee.getCompany());
+        currentEmployee.setName(employee.getName());
+        currentEmployee.setSurname(employee.getSurname());
+        currentEmployee.setEmail(employee.getEmail());
+        currentEmployee.setStartDate(employee.getStartDate());
+        currentEmployee.setVacationDays(employee.getVacationDays());
+        currentEmployee.setSalary(employee.getSalary());
+        currentEmployee.setEmploymentType((employee.getEmploymentType()));
+        currentEmployee.setCompany(employee.getCompany());
 
 
-        return employeeRepository.save(result);
+        return employeeRepository.save(currentEmployee);
     }
 
     @Override

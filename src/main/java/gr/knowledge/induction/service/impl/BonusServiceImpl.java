@@ -47,14 +47,11 @@ public class BonusServiceImpl implements BonusService {
 
         Bonus currentBonus = getBonusById(id);
 
-        Bonus result = new Bonus();
+         currentBonus.setAmount(updatedBonus.getAmount());
+         currentBonus.setCompany(updatedBonus.getCompany());
+         currentBonus.setEmployee(updatedBonus.getEmployee());
 
-         result.setId(updatedBonus.getId());
-         result.setAmount(updatedBonus.getAmount());
-         result.setCompany(updatedBonus.getCompany());
-         result.setEmployee(updatedBonus.getEmployee());
-
-        return bonusRepository.save(result);
+        return bonusRepository.save(currentBonus);
     }
 
     @Override

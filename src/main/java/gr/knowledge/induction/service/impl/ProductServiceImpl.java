@@ -41,14 +41,11 @@ public class ProductServiceImpl implements ProductService {
 
         Product currentProduct = getProductById(id);
 
-        Product result = new Product();
+        currentProduct.setName(product.getName());
+        currentProduct.setDescription(product.getDescription());
+        currentProduct.setBarcode(product.getBarcode());
 
-        result.setId(currentProduct.getId());
-        result.setName(product.getName());
-        result.setDescription(product.getDescription());
-        result.setBarcode(product.getBarcode());
-
-        return productRepository.save(result);
+        return productRepository.save(currentProduct);
     }
 
     @Override
@@ -56,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });;
+                });
 
         productRepository.deleteById(id);
 

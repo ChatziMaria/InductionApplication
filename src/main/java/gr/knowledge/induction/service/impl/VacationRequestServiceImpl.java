@@ -48,16 +48,14 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
         VacationRequest currentVacationRequest = getVacationRequestById(id);
 
-        VacationRequest result = new VacationRequest();
 
-        result.setId(currentVacationRequest.getId());
-        result.setStartDate(vacationRequest.getEndDate());
-        result.setEndDate(vacationRequest.getEndDate());
-        result.setStatus(vacationRequest.getStatus());
-        result.setDays(vacationRequest.getDays());
-        result.setEmployee(vacationRequest.getEmployee());
+        currentVacationRequest.setStartDate(vacationRequest.getEndDate());
+        currentVacationRequest.setEndDate(vacationRequest.getEndDate());
+        currentVacationRequest.setStatus(vacationRequest.getStatus());
+        currentVacationRequest.setDays(vacationRequest.getDays());
+        currentVacationRequest.setEmployee(vacationRequest.getEmployee());
 
-        return vacationRequestRepository.save(result);
+        return vacationRequestRepository.save(currentVacationRequest);
     }
 
     @Override

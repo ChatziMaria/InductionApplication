@@ -32,16 +32,13 @@ public class CompanyServiceImpl implements CompanyService {
 
         Company currentCompany = getCompanyById(id);
 
-        Company result = new Company();
-
-        result.setId(currentCompany.getId());
-        result.setName(company.getName());
-        result.setAddress(company.getAddress());
-        result.setPhone(company.getPhone());
+        currentCompany.setName(company.getName());
+        currentCompany.setAddress(company.getAddress());
+        currentCompany.setPhone(company.getPhone());
 
 
 
-        return companyRepository.save(result);
+        return companyRepository.save(currentCompany);
     }
 
     @Override

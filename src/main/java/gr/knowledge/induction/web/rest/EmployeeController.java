@@ -55,7 +55,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/monthlyExpenses/{companyId}")
-    public Double calculateMonthlyExpenses(@PathVariable Long companyId){
+    public BigDecimal calculateMonthlyExpenses(@PathVariable Long companyId){
         return employeeService.calculateMonthlyExpenses(companyId);
 
     }
