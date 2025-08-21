@@ -6,6 +6,7 @@ import gr.knowledge.induction.domain.VacationStatus;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.repository.VacationRequestRepository;
 import gr.knowledge.induction.service.VacationRequestService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,38 +38,36 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
     @Override
-    public Optional<VacationRequest> getVacationRequestById(Long id) {
-        return vacationRequestRepository.findById(id);
+    public VacationRequest getVacationRequestById(Long id) {
+        return vacationRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 
     @Override
     public VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest) {
-        VacationRequest result = new VacationRequest();
-        Optional<VacationRequest> currentVacationRequest = getVacationRequestById(id);
 
-        if (currentVacationRequest.isPresent()) {
-            result.setId(currentVacationRequest.get().getId());
-            result.setStartDate(vacationRequest.getEndDate());
-            result.setEndDate(vacationRequest.getEndDate());
-            result.setStatus(vacationRequest.getStatus());
-            result.setDays(vacationRequest.getDays());
-            result.setEmployee(vacationRequest.getEmployee());
-        } else {
-            throw new RuntimeException();
-        }
+        VacationRequest currentVacationRequest = getVacationRequestById(id);
+
+        VacationRequest result = new VacationRequest();
+
+        result.setId(currentVacationRequest.getId());
+        result.setStartDate(vacationRequest.getEndDate());
+        result.setEndDate(vacationRequest.getEndDate());
+        result.setStatus(vacationRequest.getStatus());
+        result.setDays(vacationRequest.getDays());
+        result.setEmployee(vacationRequest.getEmployee());
 
         return vacationRequestRepository.save(result);
     }
 
     @Override
     public void deleteVacationRequest(Long id) {
-        Optional<VacationRequest> vacationRequest = getVacationRequestById(id);
+        VacationRequest vacationRequest = vacationRequestRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new EntityNotFoundException();
+                });
 
-        if (vacationRequest.isPresent()) {
-            vacationRequestRepository.deleteById(id);
-        } else {
-            throw new RuntimeException();
-        }
+        vacationRequestRepository.deleteById(id);
     }
 
     @Override
@@ -98,32 +97,25 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     @Override
     public VacationRequest AcceptOrReject(VacationRequest vacationRequest){
 
-        Optional<VacationRequest> currentVacationRequest = getVacationRequestById(vacationRequest.getId());
+        VacationRequest currentVacationRequest = getVacationRequestById(vacationRequest.getId());
 
         Long employeeId = vacationRequest.getEmployee().getId();
         Employee employee =employeeRepository.findById(employeeId)
                 .orElseThrow();
 
 
-        if (currentVacationRequest.isPresent()) {
-
-            int availableDays = employee.getVacationDays();
-            int requestedDays = vacationRequest.getDays();
+        int availableDays = employee.getVacationDays();
+        int requestedDays = vacationRequest.getDays();
 
 
-            if(requestedDays <= availableDays){
-                availableDays -= requestedDays;
-                vacationRequest.setStatus(VacationStatus.APPROVED);
-                return  vacationRequestRepository.save(vacationRequest);
-            }
-            else{
-                vacationRequest.setStatus(VacationStatus.REJECTED);
-                return vacationRequestRepository.save(vacationRequest);
-            }
-
+        if(requestedDays <= availableDays){
+            availableDays -= requestedDays;
+            vacationRequest.setStatus(VacationStatus.APPROVED);
+            return  vacationRequestRepository.save(vacationRequest);
         }
-        else {
-            throw new RuntimeException();
+        else{
+            vacationRequest.setStatus(VacationStatus.REJECTED);
+            return vacationRequestRepository.save(vacationRequest);
         }
     }
 }

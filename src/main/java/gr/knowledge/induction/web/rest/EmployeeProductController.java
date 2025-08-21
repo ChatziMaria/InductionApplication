@@ -52,9 +52,9 @@ public class EmployeeProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<EmployeeProduct>> getEmployeeProductById(@PathVariable Long id){
-        Optional<EmployeeProduct> gotEmployeeProductById = employeeProductService.getEmployeeProductById(id);
-        return  ResponseEntity.ok(gotEmployeeProductById);
+    public ResponseEntity<EmployeeProduct> getEmployeeProductById(@PathVariable Long id){
+        EmployeeProduct employeeProduct = employeeProductService.getEmployeeProductById(id);
+        return  ResponseEntity.ok(employeeProduct);
     }
 
     @GetMapping("/getALLCompanyProducts/{companyId}")

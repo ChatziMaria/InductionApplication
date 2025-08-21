@@ -4,33 +4,30 @@ import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.BonusRate;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.repository.BonusRepository;
-import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.BonusService;
-import org.springframework.beans.factory.annotation.Autowired;
+import gr.knowledge.induction.service.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static gr.knowledge.induction.domain.BonusRate.WINTER;
 
 @Service
 public class BonusServiceImpl implements BonusService {
 
     private final BonusRepository bonusRepository;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public BonusServiceImpl(BonusRepository bonusRepository){
+
+    public BonusServiceImpl(BonusRepository bonusRepository, EmployeeService employeeService) {
         this.bonusRepository = bonusRepository;
+        this.employeeService = employeeService;
     }
 
     @Override
-    public Bonus createBonus(Bonus bonus, Long id){
-
+    public Bonus createBonus(Bonus bonus) {
         return bonusRepository.save(bonus);
     }
 
@@ -40,85 +37,63 @@ public class BonusServiceImpl implements BonusService {
     }
 
     @Override
-    public Optional<Bonus> getBonusById(Long id) {
-        return bonusRepository.findById(id);
+    public Bonus getBonusById(Long id) {
+        return bonusRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id));
     }
 
     @Override
-    public Bonus updateBonus(Long id, Bonus bonus){
-        Bonus result = new Bonus();
-        Optional<Bonus> currentBonus = getBonusById(id);
+    public Bonus updateBonus(Long id, Bonus updatedBonus) {
 
-        if(currentBonus.isPresent() ){
-            result.setId(currentBonus.get().getId());
-            result.setAmount(currentBonus.get().getAmount());
-            result.setCompany(currentBonus.get().getCompany());
-            result.setEmployee(currentBonus.get().getEmployee());
-        }
-        else{
-            throw new RuntimeException();
-        }
+        Bonus currentBonus = getBonusById(id);
+
+        Bonus result = new Bonus();
+
+         result.setId(updatedBonus.getId());
+         result.setAmount(updatedBonus.getAmount());
+         result.setCompany(updatedBonus.getCompany());
+         result.setEmployee(updatedBonus.getEmployee());
 
         return bonusRepository.save(result);
     }
 
     @Override
-    public void deleteBonus(Long id){
-        Optional<Bonus> bonus = getBonusById(id);
-
-        if(bonus.isPresent()){
-            bonusRepository.deleteById(id);
-        }
-        else{ throw new RuntimeException();
-        }
-
+    public void deleteBonus(Long id) {
+        Bonus existingBonus = bonusRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new EntityNotFoundException();
+                });
+        bonusRepository.delete(existingBonus);
     }
 
-
-
     @Override
-    public double bonusCalculation(String season,Double salary) {
+    public BigDecimal bonusCalculation(String season, BigDecimal salary) {
 
         if (salary == null || season == null) {
             throw new IllegalArgumentException();
         }
-
-        BonusRate bonusRate;
-        double rate = switch (season) {
-            case "WINTER" -> BonusRate.WINTER.getRate();
-            case "AUTUMN" -> BonusRate.AUTUMN.getRate();
-            case "SPRING" -> BonusRate.SPRING.getRate();
-            case "SUMMER" -> BonusRate.SUMMER.getRate();
-            default -> throw new RuntimeException();
-        };
-
-
-        return salary * rate;
+        BonusRate bonusRate = BonusRate.getRateBySeason(season);
+        return salary.multiply(BigDecimal.valueOf(bonusRate.getRate()));
     }
 
     @Override
     public List<Bonus> bonusesForCompany(Long companyId, String season){
-        List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
+//        List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
+        List<Employee> companyEmployees = employeeService.returnEmployees(companyId);
 
         List<Bonus> bonusesToSave = new ArrayList<>();
-        BonusRate bonusRate;
-
 
         for (Employee employee : companyEmployees) {
-            double salary = employee.getSalary();
-            double calculateBonus = bonusCalculation(season, salary);
-            int amount = (int) (calculateBonus);
+            BigDecimal salary = employee.getSalary();
+            BigDecimal calculateBonus = bonusCalculation(season, salary);
 
             Bonus bonus = new Bonus();
             bonus.setEmployee(employee);
             bonus.setCompany(employee.getCompany());
-            bonus.setAmount(amount);
-
+            bonus.setAmount(calculateBonus);
 
             bonusesToSave.add(bonus);
-
         }
-
         return bonusRepository.saveAll(bonusesToSave);
     }
 }

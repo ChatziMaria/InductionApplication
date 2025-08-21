@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +21,8 @@ public class BonusController {
     }
 
     @PostMapping
-    public ResponseEntity<Bonus> createBonus(@RequestBody Bonus bonus , Long id){
-        Bonus createdBonus = bonusService.createBonus(bonus,id);
+    public ResponseEntity<Bonus> createBonus(@RequestBody Bonus bonus){
+        Bonus createdBonus = bonusService.createBonus(bonus);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBonus);
     }
 
@@ -38,20 +39,20 @@ public class BonusController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Bonus>> getAllBonus(@RequestBody Bonus bonus){
+    public ResponseEntity<List<Bonus>> getAllBonus(){
         List<Bonus> gotAllBonus = bonusService.getAllBonus();
         return ResponseEntity.ok(gotAllBonus);
     }
     @GetMapping("/{id}")
-    public  ResponseEntity<Optional<Bonus>> getBonusById(@PathVariable Long id){
-        Optional<Bonus> gotBonusById = bonusService.getBonusById(id);
-        return ResponseEntity.ok(gotBonusById);
+    public  ResponseEntity<Bonus>  getBonusById(@PathVariable Long id){
+        Bonus bonus = bonusService.getBonusById(id);
+        return ResponseEntity.ok(bonus);
     }
 
     @GetMapping("/bonusCalculation")
-    public ResponseEntity<Optional<Double>> bonusCalculation(@RequestParam String season,@RequestParam Double salary ){
-        Optional<Double> gotBonusCalculation = Optional.of(bonusService.bonusCalculation(season,salary));
-                return ResponseEntity.ok(gotBonusCalculation);
+    public ResponseEntity<BigDecimal> bonusCalculation(@RequestParam String season,@RequestParam BigDecimal salary ){
+        BigDecimal bonus = bonusService.bonusCalculation(season,salary);
+                return ResponseEntity.ok(bonus);
     }
 
     @PostMapping("/bonusesForCompany")

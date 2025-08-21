@@ -11,9 +11,16 @@ import java.util.Optional;
 public interface EmployeeService {
 
     Employee createEmployee(Employee employee, Long companyId);
+
     List<Employee> getAllEmployees();
-    Optional<Employee> getEmployeeById(Long id);
+
+    Employee getEmployeeById(Long id);
+
     Employee updateEmployee(Long id, Employee employee);
+
     void deleteEmployee(Long id);
-    Double calculateMonthlyExpenses(Long companyId);
+
+    BigDecimal calculateMonthlyExpenses(Long companyId);
+
+    List<Employee> returnEmployees(Long companyId);
 }

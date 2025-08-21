@@ -12,7 +12,7 @@ public interface EmployeeProductService {
 
     EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct, Long id);
     List<EmployeeProduct> getAllEmployeeProducts();
-    Optional<EmployeeProduct> getEmployeeProductById(Long id);
+    EmployeeProduct getEmployeeProductById(Long id);
     EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct);
     void deleteEmployeeProduct(Long id);
     Map<String,List<EmployeeProduct>> getAllCompanyProducts(Long companyId);

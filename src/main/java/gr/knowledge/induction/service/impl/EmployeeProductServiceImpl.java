@@ -7,6 +7,7 @@ import gr.knowledge.induction.domain.Product;
 import gr.knowledge.induction.repository.EmployeeProductRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.EmployeeProductService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,38 +36,34 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     }
 
     @Override
-    public Optional<EmployeeProduct> getEmployeeProductById(Long id) {
-        return employeeProductRepository.findById(id);
+    public EmployeeProduct getEmployeeProductById(Long id) {
+
+        return employeeProductRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException());
     }
 
     @Override
     public EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct){
-        EmployeeProduct result = new EmployeeProduct();
-        Optional<EmployeeProduct> currentEmployeeProduct = getEmployeeProductById(id);
 
-        if(currentEmployeeProduct.isPresent()){
-            result.setId(currentEmployeeProduct.get().getId());
-            result.setEmployee(employeeProduct.getEmployee());
-            result.setProduct(employeeProduct.getProduct());
-        }
-        else{
-            throw new RuntimeException();
-        }
+        EmployeeProduct currentEmployeeProduct = getEmployeeProductById(id);
+
+        EmployeeProduct result = new EmployeeProduct();
+
+        result.setId(currentEmployeeProduct.getId());
+        result.setEmployee(employeeProduct.getEmployee());
+        result.setProduct(employeeProduct.getProduct());
 
         return employeeProductRepository.save(employeeProduct);
     }
 
     @Override
     public void deleteEmployeeProduct(Long id){
-        Optional<EmployeeProduct> employeeProduct = getEmployeeProductById(id);
+        EmployeeProduct employeeProduct = employeeProductRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new EntityNotFoundException();
+                });
+        employeeProductRepository.deleteById(id);
 
-        if (employeeProduct.isPresent()) {
-
-            employeeProductRepository.deleteById(id);
-        }
-        else{
-            throw new RuntimeException();
-        }
     }
 
     @Override

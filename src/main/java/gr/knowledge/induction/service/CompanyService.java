@@ -10,7 +10,7 @@ public interface CompanyService {
     Company createCompany(Company company);
     Company updateCompany(Long id, Company company);
     void deleteCompany(Long id);
-    Optional<Company> getCompanyById(Long Id);
+    Company getCompanyById(Long Id);
     List<Company> getAllCompanies();
 
 }

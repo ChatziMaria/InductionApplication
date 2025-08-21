@@ -38,7 +38,7 @@ public class Employee {
     private Integer vacationDays;
 
     @Column(name = "salary", nullable = false)
-    private Double salary;
+    private BigDecimal salary;
 
     @Column(name = "employment_type", nullable = false, length = 20)
     private String employmentType;
@@ -90,10 +90,10 @@ public class Employee {
         this.vacationDays = vacationDays;
     }
 
-    public Double getSalary(){
+    public BigDecimal getSalary(){
         return salary;
     }
-    public void setSalary(Double salary){
+    public void setSalary(BigDecimal salary){
         this.salary = salary;
     }
 

@@ -3,11 +3,11 @@ package gr.knowledge.induction.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 @Builder
 public class Bonus {
 
@@ -17,7 +17,7 @@ public class Bonus {
     private Long id;
 
     @Column(name = "amount", nullable = false )
-    private Integer amount;
+    private BigDecimal amount;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employee_id", nullable = false)
@@ -27,8 +27,6 @@ public class Bonus {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @Enumerated(EnumType.STRING)
-    private  BonusRate bonusRate;
 
     //getters and setters
     public Long getId(){
@@ -38,10 +36,10 @@ public class Bonus {
         this.id = id;
     }
 
-    public Integer getAmount(){
+    public BigDecimal getAmount(){
         return amount;
     }
-    public void setAmount(Integer amount){
+    public void setAmount(BigDecimal amount){
         this.amount = amount;
     }
 

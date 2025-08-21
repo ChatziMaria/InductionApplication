@@ -5,6 +5,7 @@ import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.repository.CompanyRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.EmployeeService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,55 +39,59 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Optional<Employee> getEmployeeById(Long id) {
-        return employeeRepository.findById(id);
+    public Employee getEmployeeById(Long id) {
+        return employeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException());
     }
 
     @Override
     public Employee updateEmployee(Long id, Employee employee){
-        Employee result = new Employee();
-        Optional<Employee> currentEmployee = getEmployeeById(id);
 
-        if(currentEmployee.isPresent() ){
-            result.setId(currentEmployee.get().getId());
-            result.setName(employee.getName());
-            result.setSurname(employee.getSurname());
-            result.setEmail(employee.getEmail());
-            result.setStartDate(employee.getStartDate());
-            result.setVacationDays(employee.getVacationDays());
-            result.setSalary(employee.getSalary());
-            result.setEmploymentType((employee.getEmploymentType()));
-            result.setCompany(employee.getCompany());
-        }
-        else{
-            throw new RuntimeException();
-        }
+        Employee currentEmployee = getEmployeeById(id);
+
+        Employee result = new Employee();
+
+        result.setId(currentEmployee.getId());
+        result.setName(employee.getName());
+        result.setSurname(employee.getSurname());
+        result.setEmail(employee.getEmail());
+        result.setStartDate(employee.getStartDate());
+        result.setVacationDays(employee.getVacationDays());
+        result.setSalary(employee.getSalary());
+        result.setEmploymentType((employee.getEmploymentType()));
+        result.setCompany(employee.getCompany());
+
 
         return employeeRepository.save(result);
     }
 
     @Override
     public void deleteEmployee(Long id){
-        Optional<Employee> employee = getEmployeeById(id);
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new EntityNotFoundException();
+                });
 
-        if(employee.isPresent()){
-            employeeRepository.deleteById(id);
-        }
-        else{ throw new RuntimeException();
-        }
+        employeeRepository.deleteById(id);
 
     }
 
     @Override
-    public Double calculateMonthlyExpenses(Long companyId){
+    public BigDecimal calculateMonthlyExpenses(Long companyId){
 
         List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
 
-       double totalSalary = 0;
+       BigDecimal totalSalary = BigDecimal.valueOf(0);
        for (Employee employee : companyEmployees) {
-           totalSalary += employee.getSalary();
+           totalSalary.add(employee.getSalary());
        }
        return totalSalary;
+    }
+
+    @Override
+    public List<Employee> returnEmployees(Long companyId){
+        return employeeRepository.findByCompanyId(companyId);
     }
 
 }

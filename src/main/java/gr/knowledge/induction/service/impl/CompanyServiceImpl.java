@@ -3,6 +3,7 @@ package gr.knowledge.induction.service.impl;
 import gr.knowledge.induction.domain.Company;
 import gr.knowledge.induction.repository.CompanyRepository;
 import gr.knowledge.induction.service.CompanyService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,31 +29,29 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public Company updateCompany(Long id, Company company){
+
+        Company currentCompany = getCompanyById(id);
+
         Company result = new Company();
-        Optional<Company> currentCompany = getCompanyById(id);
 
-        if(currentCompany.isPresent()){
-            result.setId(currentCompany.get().getId());
-            result.setName(company.getName());
-            result.setAddress(company.getAddress());
-            result.setPhone(company.getPhone());
+        result.setId(currentCompany.getId());
+        result.setName(company.getName());
+        result.setAddress(company.getAddress());
+        result.setPhone(company.getPhone());
 
-        }else {
-            throw new RuntimeException();
-        }
+
 
         return companyRepository.save(result);
     }
 
     @Override
-    public void deleteCompany(Long id){
-        Optional<Company> company = getCompanyById(id);
-        if(company.isPresent()) {
-          companyRepository.deleteById(id);
-        }
-        else {
-            throw new RuntimeException();
-        }
+    public void deleteCompany(Long id) {
+        Company company = companyRepository.findById(id)
+                .orElseThrow(() -> {
+                    return new EntityNotFoundException();
+                });
+
+        companyRepository.deleteById(id);
     }
 
     @Override
@@ -61,8 +60,9 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public Optional<Company> getCompanyById(Long id) {
-        return companyRepository.findById(id);
+    public Company getCompanyById(Long id) {
+        return companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id));
     }
 
 }

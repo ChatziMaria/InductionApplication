@@ -12,7 +12,7 @@ public interface VacationRequestService {
 
     VacationRequest createVacationRequest(VacationRequest vacationRequest, Long Id);
     List<VacationRequest> getAllVacationRequests();
-    Optional<VacationRequest> getVacationRequestById(Long id);
+    VacationRequest getVacationRequestById(Long id);
     VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest);
     void  deleteVacationRequest(Long id);
     VacationRequest requestVacation(VacationRequest vacationRequest);

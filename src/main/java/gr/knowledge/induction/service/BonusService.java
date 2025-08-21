@@ -3,17 +3,24 @@ package gr.knowledge.induction.service;
 import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.Employee;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 public interface BonusService {
 
-    Bonus createBonus(Bonus bonus, Long id);
+    Bonus createBonus(Bonus bonus);
+
     List<Bonus> getAllBonus();
-    Optional<Bonus> getBonusById(Long id);
+
+    Bonus getBonusById(Long id);
+
     Bonus updateBonus(Long id, Bonus bonus);
+
     void deleteBonus(Long id);
-    double bonusCalculation(String season, Double salary);
+
+    BigDecimal bonusCalculation(String season, BigDecimal salary);
+
     List<Bonus> bonusesForCompany(Long companyId, String season);
 
 }

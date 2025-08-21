@@ -49,9 +49,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Employee>> getEmployeeById(@PathVariable Long id){
-        Optional<Employee> gotEmployeeById = employeeService.getEmployeeById(id);
-        return  ResponseEntity.ok(gotEmployeeById);
+    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
+        Employee employee = employeeService.getEmployeeById(id);
+        return  ResponseEntity.ok(employee);
     }
 
     @GetMapping("/monthlyExpenses/{companyId}")

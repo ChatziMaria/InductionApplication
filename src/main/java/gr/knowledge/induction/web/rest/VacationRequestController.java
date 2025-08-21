@@ -48,8 +48,8 @@ public class VacationRequestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<VacationRequest>> getVacationRequestById(@PathVariable Long id){
-        Optional<VacationRequest> gotVacationRequestById = vacationRequestService.getVacationRequestById(id);
+    public ResponseEntity<VacationRequest> getVacationRequestById(@PathVariable Long id){
+        VacationRequest gotVacationRequestById = vacationRequestService.getVacationRequestById(id);
         return ResponseEntity.ok(gotVacationRequestById);
     }
 

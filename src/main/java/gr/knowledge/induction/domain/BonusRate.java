@@ -1,5 +1,9 @@
 package gr.knowledge.induction.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
 public enum BonusRate {
@@ -9,22 +13,29 @@ public enum BonusRate {
     SUMMER("Summer", 0.7);
 
 
-    private final String season;
-    private final  Double rate;
-
-    BonusRate(String season, Double rate){
+    BonusRate(String season, Double rate) {
         this.season = season;
         this.rate = rate;
     }
 
-    // Getter for season
     public String getSeason() {
         return season;
     }
 
-    // Getter for rate
-    public double getRate() {
+    public Double getRate() {
         return rate;
     }
 
+    private final String season;
+    private final  Double rate;
+
+
+    public static BonusRate getRateBySeason(String season) {
+        for (BonusRate rate : BonusRate.values()) {
+            if (rate.getSeason().equalsIgnoreCase(season)) {
+                return rate;
+            }
+        }
+        throw new IllegalArgumentException();
+    }
 }
