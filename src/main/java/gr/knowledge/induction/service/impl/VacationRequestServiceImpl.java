@@ -5,6 +5,7 @@ import gr.knowledge.induction.domain.VacationRequest;
 import gr.knowledge.induction.domain.VacationStatus;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.repository.VacationRequestRepository;
+import gr.knowledge.induction.service.EmployeeService;
 import gr.knowledge.induction.service.VacationRequestService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,11 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     private final VacationRequestRepository vacationRequestRepository;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
 
-    public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository) {
+    public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService) {
         this.vacationRequestRepository = vacationRequestRepository;
+        this.employeeService = employeeService;
     }
 
     @Override
@@ -72,8 +73,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     public VacationRequest requestVacation(VacationRequest vacationRequest) {
         Long employeeId = vacationRequest.getEmployee().getId();
 
-        Employee employee =employeeRepository.findById(employeeId)
-                .orElseThrow();
+        Employee employee = employeeService.getEmployeeById(employeeId);
 
         int remainingDays = employee.getVacationDays();
         int requestedDays = vacationRequest.getDays();
@@ -93,13 +93,12 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
     @Override
-    public VacationRequest AcceptOrReject(VacationRequest vacationRequest){
+    public VacationRequest acceptOrReject(VacationRequest vacationRequest){
 
         VacationRequest currentVacationRequest = getVacationRequestById(vacationRequest.getId());
 
         Long employeeId = vacationRequest.getEmployee().getId();
-        Employee employee =employeeRepository.findById(employeeId)
-                .orElseThrow();
+        Employee employee = employeeService.getEmployeeById(employeeId);
 
 
         int availableDays = employee.getVacationDays();
@@ -107,13 +106,15 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
 
         if(requestedDays <= availableDays){
-            availableDays -= requestedDays;
+            employee.setVacationDays(availableDays -= requestedDays);
             vacationRequest.setStatus(VacationStatus.APPROVED);
-            return  vacationRequestRepository.save(vacationRequest);
+            employeeService.saveEmployee(employee);
         }
-        else{
+        else {
             vacationRequest.setStatus(VacationStatus.REJECTED);
-            return vacationRequestRepository.save(vacationRequest);
+
         }
+
+        return vacationRequestRepository.save(vacationRequest);
     }
 }

@@ -91,4 +91,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.findByCompanyId(companyId);
     }
 
+    @Override
+    public Employee saveEmployee(Employee employee){
+        return  employeeRepository.save(employee);
+    }
 }

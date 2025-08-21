@@ -23,4 +23,6 @@ public interface EmployeeService {
     BigDecimal calculateMonthlyExpenses(Long companyId);
 
     List<Employee> returnEmployees(Long companyId);
+
+    Employee saveEmployee(Employee employee);
 }

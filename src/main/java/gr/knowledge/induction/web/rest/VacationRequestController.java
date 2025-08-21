@@ -1,15 +1,12 @@
 package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.VacationRequest;
-import gr.knowledge.induction.domain.VacationStatus;
 import gr.knowledge.induction.service.VacationRequestService;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/vacationRequest")
@@ -60,8 +57,8 @@ public class VacationRequestController {
     }
 
     @PutMapping("/aOrR")
-    public ResponseEntity<VacationRequest> AcceptOrReject(@RequestBody VacationRequest vacationRequest){
-        VacationRequest updatedVacationRequest = vacationRequestService.AcceptOrReject(vacationRequest);
+    public ResponseEntity<VacationRequest> acceptOrReject(@RequestBody VacationRequest vacationRequest){
+        VacationRequest updatedVacationRequest = vacationRequestService.acceptOrReject(vacationRequest);
         return ResponseEntity.ok(updatedVacationRequest);
     }
 }
