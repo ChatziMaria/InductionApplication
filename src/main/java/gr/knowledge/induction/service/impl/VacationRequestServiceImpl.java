@@ -56,7 +56,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         }
 
 
-        for (VacationRequest request : getAllVacationRequests()) {
+        for (VacationRequest request : getAllVacationRequestsById(vacationRequest)) {
 
             VacationStatus status = request.getStatus();
 
@@ -72,6 +72,14 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     private boolean isOverlapping(VacationRequest existingVacationRequest, VacationRequest newVacationRequest) {
         return !existingVacationRequest.getEndDate().isBefore(newVacationRequest.getStartDate())
                 && !newVacationRequest.getEndDate().isBefore(existingVacationRequest.getStartDate());
+    }
+
+    private Optional<VacationRequest> getAllVacationRequestsById(VacationRequest vacationRequest){
+
+        Long employeeId = vacationRequest.getEmployee().getId();
+        Employee employee = employeeService.getEmployeeById(employeeId);
+        return  vacationRequestRepository.findById(employeeId);
+
     }
 
     @Override
