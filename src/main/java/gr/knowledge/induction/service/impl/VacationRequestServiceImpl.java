@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VacationRequestServiceImpl implements VacationRequestService {
@@ -100,19 +99,26 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         Long employeeId = vacationRequest.getEmployee().getId();
         Employee employee = employeeService.getEmployeeById(employeeId);
 
-        int availableDays = employee.getVacationDays();
-        int requestedDays = vacationRequest.getDays();
+        int availableDays = Optional.ofNullable(employee.getVacationDays())
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        int requestedDays = Optional.ofNullable(vacationRequest.getDays())
+                .orElseThrow(() -> new IllegalArgumentException());
+
+        if (requestedDays <= 0) {
+            throw new IllegalArgumentException();
+        }
 
         if(requestedDays <= availableDays){
             acceptRequest(vacationRequest, employee);
         }
         else {
             rejectRequest(vacationRequest);
-
         }
-
         return vacationRequestRepository.save(vacationRequest);
     }
+    
+
 
 
     private void acceptRequest(VacationRequest vacationRequest, Employee employee){
