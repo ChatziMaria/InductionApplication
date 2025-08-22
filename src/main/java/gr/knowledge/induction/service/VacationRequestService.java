@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface VacationRequestService {
 
-    VacationRequest createVacationRequest(VacationRequest vacationRequest);
+    VacationRequest createVacationRequest(VacationRequest vacationRequest, Integer holiday);
     List<VacationRequest> getAllVacationRequests();
     VacationRequest getVacationRequestById(Long id);
     VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest);

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.BiConsumer;
 
 @Service
 public class VacationRequestServiceImpl implements VacationRequestService {
@@ -21,15 +22,56 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     private final EmployeeService employeeService;
 
+    private final Map<VacationStatus, BiConsumer<VacationRequest, Employee>> vacationActions;
+
     public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService) {
         this.vacationRequestRepository = vacationRequestRepository;
         this.employeeService = employeeService;
+
+        this.vacationActions = Map.of(
+                VacationStatus.APPROVED, this::acceptRequest,
+                VacationStatus.REJECTED, this::rejectRequest
+        );
     }
 
+
+    //TODO: να προστεθει λογικη δεσμευσης των ημερων του ζητούμενου vacation Request καθως και λογικη ελεγχου επικαλυψης
+    //TODO: με άλλα pending vacation request του employee.
     @Override
-    public VacationRequest createVacationRequest(VacationRequest vacationRequest) {
+    public VacationRequest createVacationRequest(VacationRequest vacationRequest, Integer holiday) {
+
+        checkDates(vacationRequest);
+        vacationRequest.setStatus(VacationStatus.PENDING);
 
         return vacationRequestRepository.save(vacationRequest);
+    }
+
+    private void  checkDates(VacationRequest vacationRequest){
+
+        LocalDate start = vacationRequest.getStartDate();
+        LocalDate end   = vacationRequest.getEndDate();
+
+        if (end.isBefore(start)) {
+            throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
+        }
+
+
+        for (VacationRequest request : getAllVacationRequests()) {
+
+            VacationStatus status = request.getStatus();
+
+            if (isOverlapping(request, vacationRequest)){
+                if( status == VacationStatus.APPROVED || status == VacationStatus.PENDING) {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
+
+    }
+
+    private boolean isOverlapping(VacationRequest existingVacationRequest, VacationRequest newVacationRequest) {
+        return !existingVacationRequest.getEndDate().isBefore(newVacationRequest.getStartDate())
+                && !newVacationRequest.getEndDate().isBefore(existingVacationRequest.getStartDate());
     }
 
     @Override
@@ -109,17 +151,12 @@ public class VacationRequestServiceImpl implements VacationRequestService {
             throw new IllegalArgumentException();
         }
 
-        if(requestedDays <= availableDays){
-            acceptRequest(vacationRequest, employee);
-        }
-        else {
-            rejectRequest(vacationRequest);
-        }
+       VacationStatus status = (requestedDays <= availableDays) ? VacationStatus.APPROVED : VacationStatus.REJECTED;
+
+        vacationActions.get(status).accept(vacationRequest, employee);
         return vacationRequestRepository.save(vacationRequest);
     }
     
-
-
 
     private void acceptRequest(VacationRequest vacationRequest, Employee employee){
 
@@ -132,9 +169,10 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     }
 
-    private void rejectRequest(VacationRequest vacationRequest){
+
+    //TODO: να προστεθει λογικη αποδεσμευσης ημερων σε περιπτωση απορριψης
+    private void rejectRequest(VacationRequest vacationRequest, Employee employee){
 
         vacationRequest.setStatus(VacationStatus.REJECTED);
-
     }
 }

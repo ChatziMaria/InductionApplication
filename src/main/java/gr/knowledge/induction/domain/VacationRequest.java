@@ -14,6 +14,7 @@ import java.util.Date;
 @Builder
 public class VacationRequest {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @SequenceGenerator(name = "seq_vacation_request", sequenceName =  "seq_vacation_request", allocationSize = 50)
@@ -79,8 +80,6 @@ public class VacationRequest {
     public void setEmployee(Employee employee) {
         this.employee = employee;
     }
-
-
 
 }
 

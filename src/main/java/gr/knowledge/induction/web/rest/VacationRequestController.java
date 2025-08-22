@@ -19,9 +19,9 @@ public class VacationRequestController {
     }
 
     @PostMapping
-    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest){
+    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest, @RequestParam Integer holiday){
 
-        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest);
+        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, holiday);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVacationRequest);
     }
 
