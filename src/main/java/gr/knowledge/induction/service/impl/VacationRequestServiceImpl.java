@@ -43,27 +43,24 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         LocalDate start = vacationRequest.getStartDate();
         LocalDate end   = vacationRequest.getEndDate();
         Long employeeId = vacationRequest.getEmployee().getId();
-        VacationStatus status = vacationRequest.getStatus();
 
-        checkDates(employeeId, Collections.singletonList(status), start,end);
+        checkDates(employeeId, start, end);
         vacationRequest.setStatus(VacationStatus.PENDING);
 
         return vacationRequestRepository.save(vacationRequest);
     }
 
-    private void  checkDates(Long employee,List<VacationStatus> vacationStatus, LocalDate startDate, LocalDate endDate) {
+    private void  checkDates(Long employee, LocalDate startDate, LocalDate endDate) {
 
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
         }
 
         //αν εχουμε απο το query εστω και ενα count exception και μετα ελεγχοσ status
-        if (vacationRequestRepository.countOfOverlappingRequests(employee, vacationStatus, startDate, endDate) > 0) {
 
-             if (vacationStatus.contains(VacationStatus.APPROVED ) || vacationStatus.contains(VacationStatus.PENDING)) {
-                 throw new IllegalArgumentException();
-             }
-
+        Integer result = vacationRequestRepository.countOfOverlappingRequests(employee, List.of(VacationStatus.PENDING , VacationStatus.APPROVED), startDate, endDate);
+        if (result > 0) {
+             throw new IllegalArgumentException();
         }
     }
 
