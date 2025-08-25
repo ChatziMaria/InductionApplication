@@ -40,62 +40,33 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     @Override
     public VacationRequest createVacationRequest(VacationRequest vacationRequest, Integer holiday) {
 
-        checkDates(vacationRequest);
+        LocalDate start = vacationRequest.getStartDate();
+        LocalDate end   = vacationRequest.getEndDate();
+        Long employeeId = vacationRequest.getEmployee().getId();
+        VacationStatus status = vacationRequest.getStatus();
+
+        checkDates(employeeId, Collections.singletonList(status), start,end);
         vacationRequest.setStatus(VacationStatus.PENDING);
 
         return vacationRequestRepository.save(vacationRequest);
     }
 
-    private void  checkDates(VacationRequest vacationRequest){
+    private void  checkDates(Long employee,List<VacationStatus> vacationStatus, LocalDate startDate, LocalDate endDate) {
 
-        LocalDate start = vacationRequest.getStartDate();
-        LocalDate end   = vacationRequest.getEndDate();
-
-        if (end.isBefore(start)) {
+        if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
         }
 
-        checkAllVacationRequestsByEmployeeId(vacationRequest);
+        //αν εχουμε απο το query εστω και ενα count exception και μετα ελεγχοσ status
+        if (vacationRequestRepository.countOfOverlappingRequests(employee, vacationStatus, startDate, endDate) > 0) {
 
-        for (VacationRequest request: checkAllVacationRequestsByEmployeeId(vacationRequest)){
-
-                VacationStatus status = request.getStatus();
-
-            if (isOverlapping(request, vacationRequest)){
-                if( status == VacationStatus.APPROVED || status == VacationStatus.PENDING) {
-                        throw new IllegalArgumentException();
-                }
-            }
+             if (vacationStatus.contains(VacationStatus.APPROVED ) || vacationStatus.contains(VacationStatus.PENDING)) {
+                 throw new IllegalArgumentException();
+             }
 
         }
-
-
     }
 
-    private boolean isOverlapping(VacationRequest existingVacationRequest, VacationRequest newVacationRequest) {
-        return !existingVacationRequest.getEndDate().isBefore(newVacationRequest.getStartDate())
-                && !newVacationRequest.getEndDate().isBefore(existingVacationRequest.getStartDate());
-    }
-
-    private List<VacationRequest> checkAllVacationRequestsByEmployeeId(VacationRequest vacationRequest){
-
-        Long employeeId = vacationRequest.getEmployee().getId();
-        Employee employee = employeeService.getEmployeeById(employeeId);
-
-        ArrayList<VacationRequest>employeeRequest = new ArrayList<VacationRequest>();
-
-        for (VacationRequest request: getAllVacationRequests()){
-
-            if(request.getEmployee().getId() == employeeId){
-
-                employeeRequest.add(vacationRequest);
-
-            }
-        }
-
-        return employeeRequest;
-
-    }
 
     @Override
     public List<VacationRequest> getAllVacationRequests() {
