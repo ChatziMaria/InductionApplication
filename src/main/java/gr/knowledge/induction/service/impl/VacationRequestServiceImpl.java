@@ -35,17 +35,20 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
 
-    //TODO: να προστεθει λογικη δεσμευσης των ημερων του ζητούμενου vacation Request καθως και λογικη ελεγχου επικαλυψης
-    //TODO: με άλλα pending vacation request του employee.
+    //TODO: να προστεθει λογικη δεσμευσης των ημερων του ζητούμενου vacation Request
     @Override
-    public VacationRequest createVacationRequest(VacationRequest vacationRequest, Integer holiday) {
+    public VacationRequest createVacationRequest(VacationRequest vacationRequest, List<LocalDate> holidays) {
 
         LocalDate start = vacationRequest.getStartDate();
         LocalDate end   = vacationRequest.getEndDate();
         Long employeeId = vacationRequest.getEmployee().getId();
+        Employee employee = vacationRequest.getEmployee();
 
         checkDates(employeeId, start, end);
-        vacationRequest.setStatus(VacationStatus.PENDING);
+        processingRequest(vacationRequest, employee);
+
+        Integer employeeVacationDays = vacationRequest.getEmployee().getVacationDays();
+        addHolidays(vacationRequest,employee,employeeVacationDays,holidays);
 
         return vacationRequestRepository.save(vacationRequest);
     }
@@ -56,12 +59,29 @@ public class VacationRequestServiceImpl implements VacationRequestService {
             throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
         }
 
-        //αν εχουμε απο το query εστω και ενα count exception και μετα ελεγχοσ status
+        //αν εχουμε απο το query εστω και ενα count exception και ελεγχοσ status
 
         Integer result = vacationRequestRepository.countOfOverlappingRequests(employee, List.of(VacationStatus.PENDING , VacationStatus.APPROVED), startDate, endDate);
         if (result > 0) {
              throw new IllegalArgumentException();
         }
+    }
+
+    private void addHolidays(VacationRequest vacationRequest, Employee employee, Integer employeeVacationDays,List<LocalDate> holidays ){
+
+        for ( LocalDate daysOfHoliday: holidays){
+
+            int holidayDays = holidays.toArray().length;
+            employeeVacationDays += holidayDays;
+
+            int requestedDays = vacationRequest.getDays();
+            requestedDays -= holidayDays;
+
+            vacationRequest.setDays(requestedDays);
+            employee.setVacationDays(employeeVacationDays);
+
+        }
+
     }
 
 
@@ -149,12 +169,17 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
     
 
-    private void acceptRequest(VacationRequest vacationRequest, Employee employee){
-
+    private void processingRequest(VacationRequest vacationRequest, Employee employee){
         int availableDays = employee.getVacationDays();
         int requestedDays = vacationRequest.getDays();
 
         employee.setVacationDays(availableDays -= requestedDays);
+        vacationRequest.setStatus(VacationStatus.PENDING);
+        employeeService.saveEmployee(employee);
+
+    }
+    private void acceptRequest(VacationRequest vacationRequest, Employee employee){
+
         vacationRequest.setStatus(VacationStatus.APPROVED);
         employeeService.saveEmployee(employee);
 
@@ -164,6 +189,10 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     //TODO: να προστεθει λογικη αποδεσμευσης ημερων σε περιπτωση απορριψης
     private void rejectRequest(VacationRequest vacationRequest, Employee employee){
 
+        int availableDays = employee.getVacationDays();
+        int requestedDays = vacationRequest.getDays();
+
+        employee.setVacationDays(availableDays += requestedDays);
         vacationRequest.setStatus(VacationStatus.REJECTED);
     }
 }

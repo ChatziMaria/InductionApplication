@@ -2,10 +2,12 @@ package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.VacationRequest;
 import gr.knowledge.induction.service.VacationRequestService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,9 +21,11 @@ public class VacationRequestController {
     }
 
     @PostMapping
-    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest, @RequestParam Integer holiday){
+    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest,
+                                                                  @RequestParam(name = "holidays", required = false)
+                                                                  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> holidays){
 
-        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, holiday);
+        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, holidays);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVacationRequest);
     }
 
