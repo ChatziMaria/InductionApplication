@@ -55,17 +55,20 @@ public class VacationRequestServiceImpl implements VacationRequestService {
             throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
         }
 
+        checkAllVacationRequestsByEmployeeId(vacationRequest);
 
-        for (VacationRequest request : getAllVacationRequestsById(vacationRequest)) {
+        for (VacationRequest request: checkAllVacationRequestsByEmployeeId(vacationRequest)){
 
-            VacationStatus status = request.getStatus();
+                VacationStatus status = request.getStatus();
 
             if (isOverlapping(request, vacationRequest)){
                 if( status == VacationStatus.APPROVED || status == VacationStatus.PENDING) {
-                    throw new IllegalArgumentException();
+                        throw new IllegalArgumentException();
                 }
             }
+
         }
+
 
     }
 
@@ -74,11 +77,23 @@ public class VacationRequestServiceImpl implements VacationRequestService {
                 && !newVacationRequest.getEndDate().isBefore(existingVacationRequest.getStartDate());
     }
 
-    private Optional<VacationRequest> getAllVacationRequestsById(VacationRequest vacationRequest){
+    private List<VacationRequest> checkAllVacationRequestsByEmployeeId(VacationRequest vacationRequest){
 
         Long employeeId = vacationRequest.getEmployee().getId();
         Employee employee = employeeService.getEmployeeById(employeeId);
-        return  vacationRequestRepository.findById(employeeId);
+
+        ArrayList<VacationRequest>employeeRequest = new ArrayList<VacationRequest>();
+
+        for (VacationRequest request: getAllVacationRequests()){
+
+            if(request.getEmployee().getId() == employeeId){
+
+                employeeRequest.add(vacationRequest);
+
+            }
+        }
+
+        return employeeRequest;
 
     }
 
