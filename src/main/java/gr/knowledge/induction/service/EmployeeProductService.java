@@ -15,5 +15,5 @@ public interface EmployeeProductService {
     EmployeeProduct getEmployeeProductById(Long id);
     EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct);
     void deleteEmployeeProduct(Long id);
-    Map<String,List<EmployeeProduct>> getAllCompanyProducts(Long companyId);
+    Map<String,List<Product>> getAllCompanyProducts(Long companyId);
 }

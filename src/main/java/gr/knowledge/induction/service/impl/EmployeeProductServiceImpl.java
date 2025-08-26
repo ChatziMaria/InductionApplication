@@ -7,6 +7,7 @@ import gr.knowledge.induction.domain.Product;
 import gr.knowledge.induction.repository.EmployeeProductRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.EmployeeProductService;
+import gr.knowledge.induction.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
 
     private final EmployeeProductRepository employeeProductRepository;
 
+    private  final ProductService productService;
+
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    public EmployeeProductServiceImpl(EmployeeProductRepository employeeProductRepository) {
+    public EmployeeProductServiceImpl(EmployeeProductRepository employeeProductRepository, ProductService productService) {
         this.employeeProductRepository = employeeProductRepository;
+        this.productService = productService;
     }
 
     @Override
@@ -65,25 +69,20 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     }
 
     @Override
-    public Map<String,List<EmployeeProduct>> getAllCompanyProducts(Long companyId){
-        Map<String,List<EmployeeProduct>> employeeProductMap = new HashMap<>();
+    public Map<String,List<Product>> getAllCompanyProducts(Long companyId){
 
         List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
 
         for (Employee employee : companyEmployees) {
 
-            List<EmployeeProduct> employeeProducts =  employeeProductRepository.findByEmployeeId(employee.getId());
-
-            if (employeeProducts == null || employeeProducts.isEmpty()) {
-                continue;
-            }
+            List<Product> employeeProducts = Collections.singletonList(productService.getProductById(employee.getId()));
 
             String fullName = employee.getName()+ " " + employee.getSurname();
 
-            employeeProductMap.put(fullName, employeeProducts);
+            getAllCompanyProducts(companyId).put(fullName, employeeProducts);
         }
 
-        return employeeProductMap;
+        return getAllCompanyProducts(companyId);
     }
 
 }

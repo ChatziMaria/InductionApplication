@@ -39,7 +39,6 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
 
-    //TODO: να προστεθει λογικη δεσμευσης των ημερων του ζητούμενου vacation Request
     @Override
     public VacationRequest createVacationRequest(VacationRequest vacationRequest, List<LocalDate> holidays) {
 
@@ -190,8 +189,6 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     }
 
-
-    //TODO: να προστεθει λογικη αποδεσμευσης ημερων σε περιπτωση απορριψης
     private void rejectRequest(VacationRequest vacationRequest, Employee employee){
 
         int availableDays = employee.getVacationDays();
