@@ -11,9 +11,13 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.function.BiConsumer;
+
+import static java.lang.Integer.valueOf;
 
 @Service
 public class VacationRequestServiceImpl implements VacationRequestService {
@@ -45,10 +49,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         Employee employee = vacationRequest.getEmployee();
 
         checkDates(employeeId, start, end);
-        processingRequest(vacationRequest, employee);
-
-        Integer employeeVacationDays = vacationRequest.getEmployee().getVacationDays();
-        addHolidays(vacationRequest,employee,employeeVacationDays,holidays);
+        processingRequest(vacationRequest, holidays);
 
         return vacationRequestRepository.save(vacationRequest);
     }
@@ -67,20 +68,33 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         }
     }
 
-    private void addHolidays(VacationRequest vacationRequest, Employee employee, Integer employeeVacationDays,List<LocalDate> holidays ){
+    //Αφαιρει τισ μερες που ειναι αργιεσ η σαββατοκυριακα και κανει pending
+    private void processingRequest(VacationRequest vacationRequest, List<LocalDate> holidays ){
+        int availableDays = vacationRequest.getEmployee().getVacationDays();
+        int requestedDays = vacationRequest.getDays();
+        LocalDate startDate = vacationRequest.getStartDate();
+        LocalDate endDate = vacationRequest.getEndDate();
 
-        for ( LocalDate daysOfHoliday: holidays){
+        Long totalDays = ChronoUnit.DAYS.between(startDate, endDate) ;
+        for( int i = 0; i < totalDays + 1 ; i++){
 
-            int holidayDays = holidays.toArray().length;
-            employeeVacationDays += holidayDays;
+            LocalDate currentDay = startDate.plusDays(i);
 
-            int requestedDays = vacationRequest.getDays();
-            requestedDays -= holidayDays;
+            if(currentDay.getDayOfWeek() == DayOfWeek.SATURDAY || currentDay.getDayOfWeek() == DayOfWeek.SUNDAY){
+                requestedDays -= 1;
+                availableDays += 1;
 
+            } else if (holidays.contains(currentDay)) {
+                requestedDays -= 1;
+                availableDays += 1;
+
+            }
             vacationRequest.setDays(requestedDays);
-            employee.setVacationDays(employeeVacationDays);
+            vacationRequest.getEmployee().setVacationDays(availableDays);
 
         }
+
+        vacationRequest.setStatus(VacationStatus.PENDING);
 
     }
 
@@ -169,15 +183,6 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
     
 
-    private void processingRequest(VacationRequest vacationRequest, Employee employee){
-        int availableDays = employee.getVacationDays();
-        int requestedDays = vacationRequest.getDays();
-
-        employee.setVacationDays(availableDays -= requestedDays);
-        vacationRequest.setStatus(VacationStatus.PENDING);
-        employeeService.saveEmployee(employee);
-
-    }
     private void acceptRequest(VacationRequest vacationRequest, Employee employee){
 
         vacationRequest.setStatus(VacationStatus.APPROVED);
