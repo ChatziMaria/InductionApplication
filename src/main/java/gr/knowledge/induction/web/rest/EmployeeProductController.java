@@ -58,8 +58,8 @@ public class EmployeeProductController {
     }
 
     @GetMapping("/getALLCompanyProducts/{companyId}")
-    public ResponseEntity<Map<String,List<EmployeeProduct>>> getAllCompanyProducts(@PathVariable Long companyId){
-        Map<String, List<EmployeeProduct>> gotAllCompanyProducts = employeeProductService.getAllCompanyProducts(companyId);
+    public ResponseEntity<Map<String,List<Product>>> getAllCompanyProducts(@PathVariable Long companyId){
+        Map<String, List<Product>> gotAllCompanyProducts = employeeProductService.getAllCompanyProducts(companyId);
         return  ResponseEntity.ok(gotAllCompanyProducts);
 
     }

@@ -47,6 +47,24 @@ public class EmployeeProduct {
         this.product = product;
     }
 
+    public static class EmployeeProductDTO {
+        private final String fullName;
+        private final Product product;
+
+        public EmployeeProductDTO(Employee employee, Product product) {
+            this.fullName = employee.getName() + " " + employee.getSurname();
+            this.product = product;
+        }
+
+        public String getFullName(){
+            return  fullName;
+        }
+
+        public Product getProduct(){
+            return  product;
+        }
+
+    }
 
 
 }

@@ -71,18 +71,15 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     @Override
     public Map<String,List<Product>> getAllCompanyProducts(Long companyId){
 
-        List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
+       List<EmployeeProduct.EmployeeProductDTO> rows = employeeProductRepository.findEmployeesAndProductsByCompanyId(companyId);
 
-        for (Employee employee : companyEmployees) {
+       Map<String,List<Product>> result = new HashMap<>();
 
-            List<Product> employeeProducts = Collections.singletonList(productService.getProductById(employee.getId()));
+       for (EmployeeProduct.EmployeeProductDTO dto : rows) {
+           result.computeIfAbsent(dto.getFullName(), k -> new ArrayList<>()).add(dto.getProduct());
+       }
 
-            String fullName = employee.getName()+ " " + employee.getSurname();
-
-            getAllCompanyProducts(companyId).put(fullName, employeeProducts);
-        }
-
-        return getAllCompanyProducts(companyId);
+        return result;
     }
 
 }
