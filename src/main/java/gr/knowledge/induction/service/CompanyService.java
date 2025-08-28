@@ -1,17 +1,18 @@
 package gr.knowledge.induction.service;
 
 import gr.knowledge.induction.domain.Company;
+import gr.knowledge.induction.dto.CompanyDTO;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CompanyService {
 
-    Company createCompany(Company company);
-    Company updateCompany(Long id, Company company);
+    CompanyDTO createCompany(CompanyDTO company);
+    CompanyDTO updateCompany(Long id, CompanyDTO company);
     void deleteCompany(Long id);
-    Company getCompanyById(Long Id);
-    List<Company> getAllCompanies();
+    CompanyDTO getCompanyById(Long Id);
+    List<CompanyDTO> getAllCompanies();
 
 }
 

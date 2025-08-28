@@ -2,6 +2,8 @@ package gr.knowledge.induction.service.impl;
 
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.Product;
+import gr.knowledge.induction.dto.ProductDTO;
+import gr.knowledge.induction.mapper.ProductMapper;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.repository.ProductRepository;
 import gr.knowledge.induction.service.ProductService;
@@ -16,44 +18,45 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository){
+    private final ProductMapper productMapper;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper){
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
+
     }
 
     @Override
-    public Product createProduct(Product product){
-        return  productRepository.save(product);
+    public ProductDTO createProduct(ProductDTO product){
+        return  productMapper.toDTO(productRepository.save(productMapper.toEntity(product)));
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> getAllProducts() {
+        return productMapper.toDTO(productRepository.findAll());
     }
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id));
+    public ProductDTO getProductById(Long id) {
+        return productMapper.toDTO(productRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id)));
     }
 
     @Override
-    public Product updateProduct(Long id , Product product){
+    public ProductDTO updateProduct(Long id , ProductDTO product){
 
-        Product currentProduct = getProductById(id);
+        ProductDTO currentProduct = getProductById(id);
+        productMapper.updateEntityFromDTO(productMapper.toEntity(currentProduct),product);
 
-        currentProduct.setName(product.getName());
-        currentProduct.setDescription(product.getDescription());
-        currentProduct.setBarcode(product.getBarcode());
-
-        return productRepository.save(currentProduct);
+        return productMapper.toDTO(productRepository.save(productMapper.toEntity(currentProduct)));
     }
 
     @Override
     public void deleteProduct(Long id){
-        Product product = productRepository.findById(id)
+        ProductDTO product = productMapper.toDTO(productRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });
+                }));
 
         productRepository.deleteById(id);
 

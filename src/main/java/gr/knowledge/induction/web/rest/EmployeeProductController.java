@@ -3,6 +3,7 @@ package gr.knowledge.induction.web.rest;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
+import gr.knowledge.induction.dto.EmployeeProductDTO;
 import gr.knowledge.induction.service.EmployeeProductService;
 import gr.knowledge.induction.service.EmployeeService;
 import org.springframework.http.HttpStatus;
@@ -25,16 +26,16 @@ public class EmployeeProductController {
     }
 
     @PostMapping
-    public ResponseEntity<EmployeeProduct> createEmployeeProduct(@RequestBody EmployeeProduct employeeProduct){
-        EmployeeProduct createdEmployeeProduct = employeeProductService.createEmployeeProduct(employeeProduct);
+    public ResponseEntity<EmployeeProductDTO> createEmployeeProduct(@RequestBody EmployeeProductDTO employeeProduct){
+        EmployeeProductDTO createdEmployeeProduct = employeeProductService.createEmployeeProduct(employeeProduct);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployeeProduct);
     };
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<EmployeeProduct> updateEmployeeProduct(@PathVariable Long id,@RequestBody EmployeeProduct employeeProduct){
+    public ResponseEntity<EmployeeProductDTO> updateEmployeeProduct(@PathVariable Long id,@RequestBody EmployeeProductDTO employeeProduct){
 
-        EmployeeProduct updatedEmployeeProduct = employeeProductService.updateEmployeeProduct(id,employeeProduct);
+        EmployeeProductDTO updatedEmployeeProduct = employeeProductService.updateEmployeeProduct(id,employeeProduct);
         return ResponseEntity.ok(updatedEmployeeProduct);
     }
 
@@ -46,14 +47,14 @@ public class EmployeeProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EmployeeProduct>> getAllEmployeeProducts(){
-        List<EmployeeProduct> gotAllEmployeeProducts = employeeProductService.getAllEmployeeProducts();
-        return ResponseEntity.ok( gotAllEmployeeProducts);
+    public ResponseEntity<List<EmployeeProductDTO>> getAllEmployeeProducts(){
+        List<EmployeeProductDTO> gotAllEmployeeProducts = employeeProductService.getAllEmployeeProducts();
+        return ResponseEntity.ok(gotAllEmployeeProducts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EmployeeProduct> getEmployeeProductById(@PathVariable Long id){
-        EmployeeProduct employeeProduct = employeeProductService.getEmployeeProductById(id);
+    public ResponseEntity<EmployeeProductDTO> getEmployeeProductById(@PathVariable Long id){
+        EmployeeProductDTO employeeProduct = employeeProductService.getEmployeeProductById(id);
         return  ResponseEntity.ok(employeeProduct);
     }
 

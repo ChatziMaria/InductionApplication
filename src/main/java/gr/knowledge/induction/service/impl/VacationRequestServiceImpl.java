@@ -3,12 +3,13 @@ package gr.knowledge.induction.service.impl;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.VacationRequest;
 import gr.knowledge.induction.domain.VacationStatus;
-import gr.knowledge.induction.repository.EmployeeRepository;
+import gr.knowledge.induction.dto.EmployeeDTO;
+import gr.knowledge.induction.dto.VacationRequestDTO;
+import gr.knowledge.induction.mapper.VacationRequestMapper;
 import gr.knowledge.induction.repository.VacationRequestRepository;
 import gr.knowledge.induction.service.EmployeeService;
 import gr.knowledge.induction.service.VacationRequestService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -24,12 +25,15 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     private final VacationRequestRepository vacationRequestRepository;
 
+    private final VacationRequestMapper vacationRequestMapper;
+
     private final EmployeeService employeeService;
 
     private final Map<VacationStatus, BiConsumer<VacationRequest, Employee>> vacationActions;
 
-    public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService) {
+    public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService, VacationRequestMapper vacationRequestMapper) {
         this.vacationRequestRepository = vacationRequestRepository;
+        this.vacationRequestMapper = vacationRequestMapper;
         this.employeeService = employeeService;
 
         this.vacationActions = Map.of(
@@ -40,7 +44,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
 
     @Override
-    public VacationRequest createVacationRequest(VacationRequest vacationRequest, List<LocalDate> holidays) {
+    public VacationRequestDTO createVacationRequest(VacationRequestDTO vacationRequest, List<LocalDate> holidays) {
 
         LocalDate start = vacationRequest.getStartDate();
         LocalDate end   = vacationRequest.getEndDate();
@@ -50,7 +54,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         checkDates(employeeId, start, end);
         processingRequest(vacationRequest, holidays);
 
-        return vacationRequestRepository.save(vacationRequest);
+        return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
 
     private void  checkDates(Long employee, LocalDate startDate, LocalDate endDate) {
@@ -68,7 +72,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
     }
 
     //Αφαιρει τισ μερες που ειναι αργιεσ η σαββατοκυριακα και κανει pending
-    private void processingRequest(VacationRequest vacationRequest, List<LocalDate> holidays ){
+    private void processingRequest(VacationRequestDTO vacationRequest, List<LocalDate> holidays ){
         int availableDays = vacationRequest.getEmployee().getVacationDays();
         int requestedDays = vacationRequest.getDays();
         LocalDate startDate = vacationRequest.getStartDate();
@@ -99,46 +103,40 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
 
     @Override
-    public List<VacationRequest> getAllVacationRequests() {
-        return vacationRequestRepository.findAll();
+    public List<VacationRequestDTO> getAllVacationRequests() {
+        return vacationRequestMapper.toDTO(vacationRequestRepository.findAll());
     }
 
     @Override
-    public VacationRequest getVacationRequestById(Long id) {
-        return vacationRequestRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+    public VacationRequestDTO getVacationRequestById(Long id) {
+        return vacationRequestMapper.toDTO(vacationRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException()));
     }
 
     @Override
-    public VacationRequest updateVacationRequest(Long id, VacationRequest vacationRequest) {
+    public VacationRequestDTO updateVacationRequest(Long id, VacationRequestDTO vacationRequest) {
 
-        VacationRequest currentVacationRequest = getVacationRequestById(id);
+        VacationRequestDTO currentVacationRequest = getVacationRequestById(id);
+        vacationRequestMapper.updateEntityFromDTO(vacationRequestMapper.toEntity(currentVacationRequest), vacationRequest);
 
-
-        currentVacationRequest.setStartDate(vacationRequest.getEndDate());
-        currentVacationRequest.setEndDate(vacationRequest.getEndDate());
-        currentVacationRequest.setStatus(vacationRequest.getStatus());
-        currentVacationRequest.setDays(vacationRequest.getDays());
-        currentVacationRequest.setEmployee(vacationRequest.getEmployee());
-
-        return vacationRequestRepository.save(currentVacationRequest);
+        return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(currentVacationRequest)));
     }
 
     @Override
     public void deleteVacationRequest(Long id) {
-        VacationRequest vacationRequest = vacationRequestRepository.findById(id)
+        VacationRequestDTO vacationRequest = vacationRequestMapper.toDTO(vacationRequestRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });
+                }));
 
         vacationRequestRepository.deleteById(id);
     }
 
     @Override
-    public VacationRequest requestVacation(VacationRequest vacationRequest) {
+    public VacationRequestDTO requestVacation(VacationRequestDTO vacationRequest) {
         Long employeeId = vacationRequest.getEmployee().getId();
 
-        Employee employee = employeeService.getEmployeeById(employeeId);
+        EmployeeDTO employee = employeeService.getEmployeeById(employeeId);
 
         int remainingDays = employee.getVacationDays();
         int requestedDays = vacationRequest.getDays();
@@ -154,16 +152,16 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         } else {
             throw new RuntimeException();
         }
-        return vacationRequestRepository.save(vacationRequest);
+        return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
 
 
     @Override
-    public VacationRequest handleRequest(VacationRequest vacationRequest){
+    public VacationRequestDTO handleRequest(VacationRequestDTO vacationRequest){
 
-        VacationRequest currentVacationRequest = getVacationRequestById(vacationRequest.getId());
+        VacationRequestDTO currentVacationRequest = getVacationRequestById(vacationRequest.getId());
         Long employeeId = vacationRequest.getEmployee().getId();
-        Employee employee = employeeService.getEmployeeById(employeeId);
+        EmployeeDTO employee = employeeService.getEmployeeById(employeeId);
 
         int availableDays = Optional.ofNullable(employee.getVacationDays())
                 .orElseThrow(() -> new IllegalArgumentException());
@@ -178,18 +176,18 @@ public class VacationRequestServiceImpl implements VacationRequestService {
        VacationStatus status = (requestedDays <= availableDays) ? VacationStatus.APPROVED : VacationStatus.REJECTED;
 
         vacationActions.get(status).accept(vacationRequest, employee);
-        return vacationRequestRepository.save(vacationRequest);
+        return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
     
 
-    private void acceptRequest(VacationRequest vacationRequest, Employee employee){
+    private void acceptRequest(VacationRequestDTO vacationRequest, EmployeeDTO employee){
 
         vacationRequest.setStatus(VacationStatus.APPROVED);
         employeeService.saveEmployee(employee);
 
     }
 
-    private void rejectRequest(VacationRequest vacationRequest, Employee employee){
+    private void rejectRequest(VacationRequestDTO vacationRequest, EmployeeDTO employee){
 
         int availableDays = employee.getVacationDays();
         int requestedDays = vacationRequest.getDays();

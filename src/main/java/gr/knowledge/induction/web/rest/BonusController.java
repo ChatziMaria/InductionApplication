@@ -1,6 +1,7 @@
 package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.Bonus;
+import gr.knowledge.induction.dto.BonusDTO;
 import gr.knowledge.induction.service.BonusService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class BonusController {
     }
 
     @PostMapping
-    public ResponseEntity<Bonus> createBonus(@RequestBody Bonus bonus){
-        Bonus createdBonus = bonusService.createBonus(bonus);
+    public ResponseEntity<BonusDTO> createBonus(@RequestBody BonusDTO bonus){
+        BonusDTO createdBonus = bonusService.createBonus(bonus);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdBonus);
     }
 
     @PutMapping
-    public ResponseEntity<Bonus> updateBonus(@PathVariable Long id , @RequestBody Bonus bonus){
-        Bonus updatedBonus = bonusService.updateBonus(id,bonus);
+    public ResponseEntity<BonusDTO> updateBonus(@PathVariable Long id , @RequestBody BonusDTO bonus){
+        BonusDTO updatedBonus = bonusService.updateBonus(id,bonus);
         return ResponseEntity.ok(updatedBonus);
     }
 
@@ -39,13 +40,13 @@ public class BonusController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Bonus>> getAllBonus(){
-        List<Bonus> gotAllBonus = bonusService.getAllBonus();
+    public ResponseEntity<List<BonusDTO>> getAllBonus(){
+        List<BonusDTO> gotAllBonus = bonusService.getAllBonus();
         return ResponseEntity.ok(gotAllBonus);
     }
     @GetMapping("/{id}")
-    public  ResponseEntity<Bonus>  getBonusById(@PathVariable Long id){
-        Bonus bonus = bonusService.getBonusById(id);
+    public  ResponseEntity<BonusDTO>  getBonusById(@PathVariable Long id){
+        BonusDTO bonus = bonusService.getBonusById(id);
         return ResponseEntity.ok(bonus);
     }
 
@@ -56,8 +57,8 @@ public class BonusController {
     }
 
     @PostMapping("/bonusesForCompany")
-    public ResponseEntity<List<Bonus>> bonusesForCompany(@RequestParam Long companyId, String season){
-        List<Bonus> bonuses = bonusService.bonusesForCompany(companyId,season);
+    public ResponseEntity<List<BonusDTO>> bonusesForCompany(@RequestParam Long companyId, String season){
+        List<BonusDTO> bonuses = bonusService.bonusesForCompany(companyId,season);
         return ResponseEntity.status(HttpStatus.CREATED).body(bonuses);
     }
 }

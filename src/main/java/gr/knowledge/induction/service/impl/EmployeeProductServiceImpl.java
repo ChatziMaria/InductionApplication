@@ -4,6 +4,8 @@ import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
+import gr.knowledge.induction.dto.EmployeeProductDTO;
+import gr.knowledge.induction.mapper.EmployeeProductMapper;
 import gr.knowledge.induction.repository.EmployeeProductRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.EmployeeProductService;
@@ -19,51 +21,49 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
 
     private final EmployeeProductRepository employeeProductRepository;
 
+    private final EmployeeProductMapper employeeProductMapper;
+
     private  final ProductService productService;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    public EmployeeProductServiceImpl(EmployeeProductRepository employeeProductRepository, ProductService productService) {
+    public EmployeeProductServiceImpl(EmployeeProductRepository employeeProductRepository, ProductService productService, EmployeeProductMapper employeeProductMapper) {
         this.employeeProductRepository = employeeProductRepository;
         this.productService = productService;
+        this.employeeProductMapper = employeeProductMapper;
     }
 
     @Override
-    public EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct){
-        return  employeeProductRepository.save(employeeProduct);
+    public EmployeeProductDTO createEmployeeProduct(EmployeeProductDTO employeeProduct){
+        return  employeeProductMapper.toDTO(employeeProductRepository.save(employeeProductMapper.toEntity(employeeProduct)));
     }
 
     @Override
-    public List<EmployeeProduct> getAllEmployeeProducts() {
-        return employeeProductRepository.findAll();
+    public List<EmployeeProductDTO> getAllEmployeeProducts() {
+        return employeeProductMapper.toDTO(employeeProductRepository.findAll());
     }
 
     @Override
-    public EmployeeProduct getEmployeeProductById(Long id) {
+    public EmployeeProductDTO getEmployeeProductById(Long id) {
 
-        return employeeProductRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException());
+        return employeeProductMapper.toDTO(employeeProductRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException()));
     }
 
     @Override
-    public EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct){
+    public EmployeeProductDTO updateEmployeeProduct(Long id, EmployeeProductDTO employeeProduct){
 
-        EmployeeProduct currentEmployeeProduct = getEmployeeProductById(id);
+        EmployeeProductDTO currentEmployeeProduct = getEmployeeProductById(id);
 
+        employeeProductMapper.updateEntityFromDTO(employeeProductMapper.toEntity(currentEmployeeProduct), employeeProduct );
 
-        currentEmployeeProduct.setEmployee(employeeProduct.getEmployee());
-        currentEmployeeProduct.setProduct(employeeProduct.getProduct());
-
-        return employeeProductRepository.save(employeeProduct);
+        return employeeProductMapper.toDTO(employeeProductRepository.save(employeeProductMapper.toEntity(employeeProduct)));
     }
 
     @Override
     public void deleteEmployeeProduct(Long id){
-        EmployeeProduct employeeProduct = employeeProductRepository.findById(id)
+        EmployeeProductDTO employeeProduct = employeeProductMapper.toDTO(employeeProductRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });
+                }));
         employeeProductRepository.deleteById(id);
 
     }
@@ -71,13 +71,33 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     @Override
     public Map<String,List<Product>> getAllCompanyProducts(Long companyId){
 
-       List<EmployeeProduct.EmployeeProductDTO> rows = employeeProductRepository.findEmployeesAndProductsByCompanyId(companyId);
+       List<EmployeeProductDTO> employeeProducts = employeeProductMapper.toDTO(employeeProductRepository.findEmployeesAndProductsByCompanyId(companyId));
 
-       Map<String,List<Product>> result = new HashMap<>();
+       Map<String,List<Product>> result = groupProductsByEmployee(employeeProducts);
 
-       for (EmployeeProduct.EmployeeProductDTO dto : rows) {
-           result.computeIfAbsent(dto.getFullName(), k -> new ArrayList<>()).add(dto.getProduct());
-       }
+        return result;
+    }
+
+
+    private Map<String,List<Product>> groupProductsByEmployee(List<EmployeeProductDTO> employeeProducts){
+
+        Map<String,List<Product>> result =new HashMap<>();
+
+        for(EmployeeProductDTO employeeProduct: employeeProducts){
+            String fullName = employeeProduct.getEmployee().getName() + " " + employeeProduct.getEmployee().getSurname();
+            Product product = employeeProduct.getProduct();
+
+            if(result.containsKey(fullName)){
+                List<Product> products = result.get(fullName);
+                products.add(product);
+            }
+            else{
+                List<Product> products = new ArrayList<>();
+                products.add(product);
+                result.put(fullName, products);
+            }
+
+        }
 
         return result;
     }

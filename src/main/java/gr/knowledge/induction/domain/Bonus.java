@@ -9,14 +9,17 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Getter
+@Setter
+
 public class Bonus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @SequenceGenerator(name = "seq_bonus" , sequenceName = "seq_bonus" , allocationSize = 50)
+    @SequenceGenerator(name = "seq_bonus", sequenceName = "seq_bonus", allocationSize = 50)
     private Long id;
 
-    @Column(name = "amount", nullable = false )
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -27,34 +30,4 @@ public class Bonus {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-
-    //getters and setters
-    public Long getId(){
-        return id;
-    }
-    public void setId(Long id){
-        this.id = id;
-    }
-
-    public BigDecimal getAmount(){
-        return amount;
-    }
-    public void setAmount(BigDecimal amount){
-        this.amount = amount;
-    }
-
-    public Company getCompany(){
-        return company;
-    }
-    public void setCompany(Company company) {
-        this.company = company;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
-    }
 }

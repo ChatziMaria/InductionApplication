@@ -12,11 +12,15 @@ import java.util.List;
 public interface EmployeeProductRepository extends JpaRepository<EmployeeProduct, Long> {
     List<EmployeeProduct> findByEmployeeId(Long id);
 
-    @Query("SELECT new com.example.demo.EmployeeDTO(e.firstName, e.lastName, p)" +
-            " FROM employeeProduct ep  +" +
-            " JOIN employee e ON e.id = ep.employee_id  +" +
-            " JOIN company c ON c.id = e.company_id " +
-            " WHERE c.id = :companyId")
-    List<EmployeeProduct.EmployeeProductDTO> findEmployeesAndProductsByCompanyId(@Param(("companyId")) Long companyId);
+    @Query("""
+     SELECT ep
+     FROM EmployeeProduct ep
+     JOIN FETCH ep.employee e
+     JOIN FETCH e.company c
+     JOIN FETCH ep.product p
+     WHERE c.id = :companyId
+     """)
+    List<EmployeeProduct> findEmployeesAndProductsByCompanyId(@Param("companyId") Long companyId);
+
 
 }

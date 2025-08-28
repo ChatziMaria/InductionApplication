@@ -3,6 +3,7 @@ package gr.knowledge.induction.service;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
+import gr.knowledge.induction.dto.EmployeeProductDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -10,10 +11,10 @@ import java.util.Optional;
 
 public interface EmployeeProductService {
 
-    EmployeeProduct createEmployeeProduct(EmployeeProduct employeeProduct);
-    List<EmployeeProduct> getAllEmployeeProducts();
-    EmployeeProduct getEmployeeProductById(Long id);
-    EmployeeProduct updateEmployeeProduct(Long id, EmployeeProduct employeeProduct);
+    EmployeeProductDTO createEmployeeProduct(EmployeeProductDTO employeeProduct);
+    List<EmployeeProductDTO> getAllEmployeeProducts();
+    EmployeeProductDTO getEmployeeProductById(Long id);
+    EmployeeProductDTO updateEmployeeProduct(Long id, EmployeeProductDTO employeeProduct);
     void deleteEmployeeProduct(Long id);
     Map<String,List<Product>> getAllCompanyProducts(Long companyId);
 }

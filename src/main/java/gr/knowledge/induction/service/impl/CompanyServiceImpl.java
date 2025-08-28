@@ -1,6 +1,8 @@
 package gr.knowledge.induction.service.impl;
 
 import gr.knowledge.induction.domain.Company;
+import gr.knowledge.induction.dto.CompanyDTO;
+import gr.knowledge.induction.mapper.CompanyMapper;
 import gr.knowledge.induction.repository.CompanyRepository;
 import gr.knowledge.induction.service.CompanyService;
 import jakarta.persistence.EntityNotFoundException;
@@ -16,50 +18,48 @@ public class CompanyServiceImpl implements CompanyService {
 
     private final CompanyRepository companyRepository;
 
-    public CompanyServiceImpl(CompanyRepository companyRepository) {
+    private final CompanyMapper companyMapper;
+
+    public CompanyServiceImpl(CompanyRepository companyRepository, CompanyMapper companyMapper) {
 
         this.companyRepository = companyRepository;
+        this.companyMapper = companyMapper;
     }
 
 
     @Override
-   public Company createCompany(Company company){
-        return companyRepository.save(company);
+   public CompanyDTO createCompany(CompanyDTO company){
+        return companyMapper.toDTO(companyRepository.save(companyMapper.toEntity(company)));
     }
 
     @Override
-    public Company updateCompany(Long id, Company company){
+    public CompanyDTO updateCompany(Long id, CompanyDTO company){
 
-        Company currentCompany = getCompanyById(id);
+        CompanyDTO currentCompany = getCompanyById(id);
+        companyMapper.updateEntityFromDTO(companyMapper.toEntity(currentCompany),company);
 
-        currentCompany.setName(company.getName());
-        currentCompany.setAddress(company.getAddress());
-        currentCompany.setPhone(company.getPhone());
-
-
-
-        return companyRepository.save(currentCompany);
+        return companyMapper.toDTO(companyRepository.save(companyMapper.toEntity(currentCompany)));
     }
 
     @Override
     public void deleteCompany(Long id) {
-        Company company = companyRepository.findById(id)
+        CompanyDTO company = companyMapper.toDTO(companyRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });
+                }));
 
         companyRepository.deleteById(id);
     }
 
     @Override
-    public List<Company> getAllCompanies() {
-        return companyRepository.findAll();
+    public List<CompanyDTO> getAllCompanies() {
+        return companyMapper.toDTO(companyRepository.findAll());
     }
 
     @Override
-    public Company getCompanyById(Long id) {
-        return companyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id));
+    public CompanyDTO getCompanyById(Long id) {
+        return companyMapper.toDTO(companyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id)));
     }
 
 }

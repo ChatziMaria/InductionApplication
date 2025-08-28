@@ -3,6 +3,9 @@ package gr.knowledge.induction.service.impl;
 import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.BonusRate;
 import gr.knowledge.induction.domain.Employee;
+import gr.knowledge.induction.dto.BonusDTO;
+import gr.knowledge.induction.dto.EmployeeDTO;
+import gr.knowledge.induction.mapper.BonusMapper;
 import gr.knowledge.induction.repository.BonusRepository;
 import gr.knowledge.induction.service.BonusService;
 import gr.knowledge.induction.service.EmployeeService;
@@ -14,53 +17,51 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class BonusServiceImpl implements BonusService {
 
     private final BonusRepository bonusRepository;
 
+    private final BonusMapper bonusMapper;
+
     private final EmployeeService employeeService;
 
 
-    public BonusServiceImpl(BonusRepository bonusRepository, EmployeeService employeeService) {
+    public BonusServiceImpl(BonusRepository bonusRepository, EmployeeService employeeService, BonusMapper bonusMapper) {
         this.bonusRepository = bonusRepository;
         this.employeeService = employeeService;
+        this.bonusMapper = bonusMapper;
     }
 
     @Override
-    public Bonus createBonus(Bonus bonus) {
-        return bonusRepository.save(bonus);
+    public BonusDTO createBonus(BonusDTO bonusDTO) {
+        return bonusMapper.toDTO(bonusRepository.save(bonusMapper.toEntity(bonusDTO)));
     }
 
     @Override
-    public List<Bonus> getAllBonus() {
-        return bonusRepository.findAll();
+    public List<BonusDTO> getAllBonus() {
+        return bonusMapper.toDTO(bonusRepository.findAll());
     }
 
     @Override
-    public Bonus getBonusById(Long id) {
-        return bonusRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id));
+    public BonusDTO getBonusById(Long id) {
+        return bonusMapper.toDTO(bonusRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Bonus not found with id " + id)));
     }
 
     @Override
-    public Bonus updateBonus(Long id, Bonus updatedBonus) {
+    public BonusDTO updateBonus(Long id, BonusDTO updatedBonus) {
 
-        Bonus currentBonus = getBonusById(id);
+        BonusDTO currentBonus = getBonusById(id);
+        bonusMapper.updateEntityFromDTO(bonusMapper.toEntity(currentBonus), updatedBonus);
 
-         currentBonus.setAmount(updatedBonus.getAmount());
-         currentBonus.setCompany(updatedBonus.getCompany());
-         currentBonus.setEmployee(updatedBonus.getEmployee());
-
-        return bonusRepository.save(currentBonus);
+        return bonusMapper.toDTO(bonusRepository.save(bonusMapper.toEntity(updatedBonus)));
     }
 
     @Override
     public void deleteBonus(Long id) {
-        Bonus existingBonus = bonusRepository.findById(id)
-                .orElseThrow(() -> {
-                    return new EntityNotFoundException();
-                });
-        bonusRepository.delete(existingBonus);
+        BonusDTO existingBonus = getBonusById(id);
+        bonusRepository.delete(bonusMapper.toEntity(existingBonus));
     }
 
     @Override
@@ -74,24 +75,24 @@ public class BonusServiceImpl implements BonusService {
     }
 
     @Override
-    public List<Bonus> bonusesForCompany(Long companyId, String season){
-//        List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
-        List<Employee> companyEmployees = employeeService.returnEmployees(companyId);
+    public List<BonusDTO> bonusesForCompany(Long companyId, String season){
 
-        List<Bonus> bonusesToSave = new ArrayList<>();
+        List<EmployeeDTO> companyEmployees = employeeService.returnEmployees(companyId);
 
-        for (Employee employee : companyEmployees) {
+        List<BonusDTO> bonusesToSave = new ArrayList<>();
+
+        for (EmployeeDTO employee : companyEmployees) {
             BigDecimal salary = employee.getSalary();
             BigDecimal calculateBonus = bonusCalculation(season, salary);
 
-            Bonus bonus = new Bonus();
+            BonusDTO bonus = new BonusDTO();
             bonus.setEmployee(employee);
             bonus.setCompany(employee.getCompany());
             bonus.setAmount(calculateBonus);
 
             bonusesToSave.add(bonus);
         }
-        return bonusRepository.saveAll(bonusesToSave);
+        return bonusMapper.toDTO(bonusRepository.saveAll(bonusMapper.toEntity(bonusesToSave)));
     }
 }
 

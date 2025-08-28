@@ -2,6 +2,7 @@ package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.Company;
 import gr.knowledge.induction.domain.Employee;
+import gr.knowledge.induction.dto.EmployeeDTO;
 import gr.knowledge.induction.service.EmployeeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,15 +24,15 @@ public class EmployeeController {
     }
 
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee){
-        Employee createdEmployee = employeeService.createEmployee(employee);
+    public ResponseEntity<EmployeeDTO> createEmployee(@RequestBody EmployeeDTO employee){
+        EmployeeDTO createdEmployee = employeeService.createEmployee(employee);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEmployee);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,@RequestBody Employee employee){
+    public ResponseEntity<EmployeeDTO> updateEmployee(@PathVariable Long id,@RequestBody EmployeeDTO employee){
 
-        Employee updatedEmployee = employeeService.updateEmployee(id,employee);
+        EmployeeDTO updatedEmployee = employeeService.updateEmployee(id,employee);
         return ResponseEntity.ok(updatedEmployee);
     }
 
@@ -43,14 +44,14 @@ public class EmployeeController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees(){
-        List<Employee> gotAllEmployees = employeeService.getAllEmployees();
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees(){
+        List<EmployeeDTO> gotAllEmployees = employeeService.getAllEmployees();
         return ResponseEntity.ok( gotAllEmployees);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id){
-        Employee employee = employeeService.getEmployeeById(id);
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id){
+        EmployeeDTO employee = employeeService.getEmployeeById(id);
         return  ResponseEntity.ok(employee);
     }
 

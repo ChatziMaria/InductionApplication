@@ -1,6 +1,7 @@
 package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.VacationRequest;
+import gr.knowledge.induction.dto.VacationRequestDTO;
 import gr.knowledge.induction.service.VacationRequestService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -21,18 +22,18 @@ public class VacationRequestController {
     }
 
     @PostMapping
-    public  ResponseEntity<VacationRequest> createVacationRequest(@RequestBody VacationRequest vacationRequest,
-                                                                  @RequestParam(name = "holidays", required = false)
+    public  ResponseEntity<VacationRequestDTO> createVacationRequest(@RequestBody VacationRequestDTO vacationRequest,
+                                                                     @RequestParam(name = "holidays", required = false)
                                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) List<LocalDate> holidays){
 
-        VacationRequest createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, holidays);
+        VacationRequestDTO createdVacationRequest = vacationRequestService.createVacationRequest(vacationRequest, holidays);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdVacationRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VacationRequest> updateVacationRequest( @PathVariable Long id,@RequestBody VacationRequest vacationRequest){
+    public ResponseEntity<VacationRequestDTO> updateVacationRequest( @PathVariable Long id,@RequestBody VacationRequestDTO vacationRequest){
 
-        VacationRequest updatedVacationRequest = vacationRequestService.updateVacationRequest(id,vacationRequest);
+        VacationRequestDTO updatedVacationRequest = vacationRequestService.updateVacationRequest(id,vacationRequest);
         return ResponseEntity.ok(updatedVacationRequest);
     }
 
@@ -43,26 +44,26 @@ public class VacationRequestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VacationRequest>> getAllVacationRequests(){
-        List<VacationRequest> gotAllVacationRequests = vacationRequestService.getAllVacationRequests();
+    public ResponseEntity<List<VacationRequestDTO>> getAllVacationRequests(){
+        List<VacationRequestDTO> gotAllVacationRequests = vacationRequestService.getAllVacationRequests();
         return ResponseEntity.ok( gotAllVacationRequests);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VacationRequest> getVacationRequestById(@PathVariable Long id){
-        VacationRequest gotVacationRequestById = vacationRequestService.getVacationRequestById(id);
+    public ResponseEntity<VacationRequestDTO> getVacationRequestById(@PathVariable Long id){
+        VacationRequestDTO gotVacationRequestById = vacationRequestService.getVacationRequestById(id);
         return ResponseEntity.ok(gotVacationRequestById);
     }
 
     @PostMapping("/request")
-    public ResponseEntity<VacationRequest> requestVacation(@RequestBody VacationRequest vacationRequest){
-        VacationRequest processedRequest = vacationRequestService.requestVacation(vacationRequest);
+    public ResponseEntity<VacationRequestDTO> requestVacation(@RequestBody VacationRequestDTO vacationRequest){
+        VacationRequestDTO processedRequest = vacationRequestService.requestVacation(vacationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(processedRequest);
     }
 
     @PutMapping("/handleRequest")
-    public  ResponseEntity<VacationRequest> handleRequest(@RequestBody VacationRequest vacationRequest){
-        VacationRequest updatedVacationRequest = vacationRequestService.handleRequest(vacationRequest);
+    public  ResponseEntity<VacationRequestDTO> handleRequest(@RequestBody VacationRequestDTO vacationRequest){
+        VacationRequestDTO updatedVacationRequest = vacationRequestService.handleRequest(vacationRequest);
         return ResponseEntity.ok(updatedVacationRequest);
     }
 }

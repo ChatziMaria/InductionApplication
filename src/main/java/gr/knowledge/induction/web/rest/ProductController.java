@@ -2,6 +2,7 @@ package gr.knowledge.induction.web.rest;
 
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.Product;
+import gr.knowledge.induction.dto.ProductDTO;
 import gr.knowledge.induction.service.EmployeeService;
 import gr.knowledge.induction.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product){
-        Product createdProduct = productService.createProduct(product);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO product){
+        ProductDTO createdProduct = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id,@RequestBody Product product){
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Long id,@RequestBody ProductDTO product){
 
-        Product updatedProduct = productService.updateProduct(id,product);
+        ProductDTO updatedProduct = productService.updateProduct(id,product);
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -45,14 +46,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts(){
-        List<Product> gotAllProducts = productService.getAllProducts();
+    public ResponseEntity<List<ProductDTO>> getAllProducts(){
+        List<ProductDTO> gotAllProducts = productService.getAllProducts();
         return ResponseEntity.ok( gotAllProducts);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id){
-        Product product = productService.getProductById(id);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id){
+        ProductDTO product = productService.getProductById(id);
         return  ResponseEntity.ok(product);
     }
 

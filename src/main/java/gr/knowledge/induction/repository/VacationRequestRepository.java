@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface VacationRequestRepository extends JpaRepository<VacationRequest, Long> {
 
-    @Query("SELECT COUNT(vr) FROM VacationRequest WHERE employee.id =: employeeId AND status IN (:statuses) AND startDate <=: endDate AND endDate >=: startDate" )
+    @Query("SELECT COUNT(vr) FROM VacationRequest vr WHERE employee.id =: employeeId AND status IN (:statuses) AND startDate <=: endDate AND endDate >=: startDate" )
     Integer countOfOverlappingRequests(@Param("employeeId") Long employeeId,
                                        @Param("statuses") List VacationStatus,
                                        @Param("startDate") LocalDate startDate,

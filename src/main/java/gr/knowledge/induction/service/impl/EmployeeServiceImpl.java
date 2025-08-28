@@ -2,6 +2,8 @@ package gr.knowledge.induction.service.impl;
 
 import gr.knowledge.induction.domain.Company;
 import gr.knowledge.induction.domain.Employee;
+import gr.knowledge.induction.dto.EmployeeDTO;
+import gr.knowledge.induction.mapper.EmployeeMapper;
 import gr.knowledge.induction.repository.CompanyRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
 import gr.knowledge.induction.service.EmployeeService;
@@ -21,54 +23,46 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
 
-    @Autowired CompanyRepository companyRepository;
+    private final EmployeeMapper employeeMapper;
 
-    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository, EmployeeMapper employeeMapper) {
         this.employeeRepository = employeeRepository;
+        this.employeeMapper = employeeMapper;
+
     }
 
     @Override
-    public Employee createEmployee(Employee employee){
-
-        return employeeRepository.save(employee);
+    public EmployeeDTO createEmployee(EmployeeDTO employee){
+        return employeeMapper.toDTO(employeeRepository.save(employeeMapper.toEntity(employee)));
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeMapper.toDTO(employeeRepository.findAll());
     }
 
     @Override
-    public Employee getEmployeeById(Long id) {
-        return employeeRepository.findById(id)
+    public EmployeeDTO getEmployeeById(Long id) {
+        return employeeMapper.toDTO(employeeRepository.findById(id)
                 .orElseThrow(() ->
-                        new EntityNotFoundException());
+                        new EntityNotFoundException()));
     }
 
     @Override
-    public Employee updateEmployee(Long id, Employee employee){
+    public EmployeeDTO updateEmployee(Long id, EmployeeDTO employee){
 
-        Employee currentEmployee = getEmployeeById(id);
+        EmployeeDTO currentEmployee = getEmployeeById(id);
+        employeeMapper.updateEntityFromDTO(employeeMapper.toEntity(currentEmployee), employee);
 
-        currentEmployee.setName(employee.getName());
-        currentEmployee.setSurname(employee.getSurname());
-        currentEmployee.setEmail(employee.getEmail());
-        currentEmployee.setStartDate(employee.getStartDate());
-        currentEmployee.setVacationDays(employee.getVacationDays());
-        currentEmployee.setSalary(employee.getSalary());
-        currentEmployee.setEmploymentType((employee.getEmploymentType()));
-        currentEmployee.setCompany(employee.getCompany());
-
-
-        return employeeRepository.save(currentEmployee);
+        return employeeMapper.toDTO(employeeRepository.save(employeeMapper.toEntity(currentEmployee)));
     }
 
     @Override
     public void deleteEmployee(Long id){
-        Employee employee = employeeRepository.findById(id)
+        EmployeeDTO employee = employeeMapper.toDTO(employeeRepository.findById(id)
                 .orElseThrow(() -> {
                     return new EntityNotFoundException();
-                });
+                }));
 
         employeeRepository.deleteById(id);
 
@@ -77,22 +71,22 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public BigDecimal calculateMonthlyExpenses(Long companyId){
 
-        List<Employee> companyEmployees = employeeRepository.findByCompanyId(companyId);
+        List<EmployeeDTO> companyEmployees = employeeMapper.toDTO(employeeRepository.findByCompanyId(companyId));
 
        BigDecimal totalSalary = BigDecimal.valueOf(0);
-       for (Employee employee : companyEmployees) {
+       for (EmployeeDTO employee : companyEmployees) {
            totalSalary.add(employee.getSalary());
        }
        return totalSalary;
     }
 
     @Override
-    public List<Employee> returnEmployees(Long companyId){
-        return employeeRepository.findByCompanyId(companyId);
+    public List<EmployeeDTO> returnEmployees(Long companyId){
+        return employeeMapper.toDTO(employeeRepository.findByCompanyId(companyId));
     }
 
     @Override
-    public Employee saveEmployee(Employee employee){
+    public EmployeeDTO saveEmployee(EmployeeDTO employee){
         return  employeeRepository.save(employee);
     }
 }

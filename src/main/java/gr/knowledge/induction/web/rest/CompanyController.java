@@ -2,6 +2,7 @@ package gr.knowledge.induction.web.rest;
 
 
 import gr.knowledge.induction.domain.Company;
+import gr.knowledge.induction.dto.CompanyDTO;
 import gr.knowledge.induction.service.CompanyService;
 import jakarta.annotation.Nullable;
 import org.springframework.http.HttpStatus;
@@ -22,15 +23,15 @@ public class CompanyController {
     }
 
     @PostMapping
-    public ResponseEntity<Company> createCompany(@RequestBody Company company){
-        Company createdCompany = companyService.createCompany(company);
+    public ResponseEntity<CompanyDTO> createCompany(@RequestBody CompanyDTO company){
+        CompanyDTO createdCompany = companyService.createCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCompany);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Company> updateCompany(@PathVariable Long id,@RequestBody Company company){
+    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable Long id,@RequestBody CompanyDTO company){
 
-        Company updatedCompany = companyService.updateCompany(id,company);
+        CompanyDTO updatedCompany = companyService.updateCompany(id,company);
         return ResponseEntity.ok(updatedCompany);
     }
 
@@ -41,14 +42,14 @@ public class CompanyController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Company>> getAllCompanies(){
-        List<Company> gotAllCompanies = companyService.getAllCompanies();
+    public ResponseEntity<List<CompanyDTO>> getAllCompanies(){
+        List<CompanyDTO> gotAllCompanies = companyService.getAllCompanies();
         return ResponseEntity.ok( gotAllCompanies);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Company> getCompanyById(@PathVariable Long id){
-        Company company = companyService.getCompanyById(id);
+    public ResponseEntity<CompanyDTO> getCompanyById(@PathVariable Long id){
+        CompanyDTO company = companyService.getCompanyById(id);
         return  ResponseEntity.ok(company);
     }
 

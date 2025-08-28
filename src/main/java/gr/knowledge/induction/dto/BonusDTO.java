@@ -1,24 +1,20 @@
 package gr.knowledge.induction.dto;
 
-import gr.knowledge.induction.domain.Employee;
+
 import lombok.*;
+
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
-@Builder
-
-public class EmployeeProductDTO {
+public class BonusDTO {
 
     private Long id;
+    private BigDecimal amount;
     private EmployeeDTO employee;
-    private ProductDTO product;
-
-
-
+    private CompanyDTO company;
 
 }
-
-
-
