@@ -4,6 +4,7 @@ import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
 import gr.knowledge.induction.dto.EmployeeProductDTO;
+import gr.knowledge.induction.dto.ProductDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -16,5 +17,5 @@ public interface EmployeeProductService {
     EmployeeProductDTO getEmployeeProductById(Long id);
     EmployeeProductDTO updateEmployeeProduct(Long id, EmployeeProductDTO employeeProduct);
     void deleteEmployeeProduct(Long id);
-    Map<String,List<Product>> getAllCompanyProducts(Long companyId);
+    Map<String,List<ProductDTO>> getAllCompanyProducts(Long companyId);
 }

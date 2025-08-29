@@ -29,7 +29,7 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     private final EmployeeService employeeService;
 
-    private final Map<VacationStatus, BiConsumer<VacationRequest, Employee>> vacationActions;
+    private final Map<VacationStatus, BiConsumer<VacationRequestDTO, EmployeeDTO>> vacationActions;
 
     public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService, VacationRequestMapper vacationRequestMapper) {
         this.vacationRequestRepository = vacationRequestRepository;

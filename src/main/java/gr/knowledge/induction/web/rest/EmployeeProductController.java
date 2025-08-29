@@ -4,6 +4,7 @@ import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
 import gr.knowledge.induction.dto.EmployeeProductDTO;
+import gr.knowledge.induction.dto.ProductDTO;
 import gr.knowledge.induction.service.EmployeeProductService;
 import gr.knowledge.induction.service.EmployeeService;
 import org.springframework.http.HttpStatus;
@@ -59,8 +60,8 @@ public class EmployeeProductController {
     }
 
     @GetMapping("/getALLCompanyProducts/{companyId}")
-    public ResponseEntity<Map<String,List<Product>>> getAllCompanyProducts(@PathVariable Long companyId){
-        Map<String, List<Product>> gotAllCompanyProducts = employeeProductService.getAllCompanyProducts(companyId);
+    public ResponseEntity<Map<String,List<ProductDTO>>> getAllCompanyProducts(@PathVariable Long companyId){
+        Map<String, List<ProductDTO>> gotAllCompanyProducts = employeeProductService.getAllCompanyProducts(companyId);
         return  ResponseEntity.ok(gotAllCompanyProducts);
 
     }

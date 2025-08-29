@@ -5,6 +5,7 @@ import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.EmployeeProduct;
 import gr.knowledge.induction.domain.Product;
 import gr.knowledge.induction.dto.EmployeeProductDTO;
+import gr.knowledge.induction.dto.ProductDTO;
 import gr.knowledge.induction.mapper.EmployeeProductMapper;
 import gr.knowledge.induction.repository.EmployeeProductRepository;
 import gr.knowledge.induction.repository.EmployeeRepository;
@@ -69,30 +70,30 @@ public class EmployeeProductServiceImpl implements EmployeeProductService {
     }
 
     @Override
-    public Map<String,List<Product>> getAllCompanyProducts(Long companyId){
+    public Map<String,List<ProductDTO>> getAllCompanyProducts(Long companyId){
 
        List<EmployeeProductDTO> employeeProducts = employeeProductMapper.toDTO(employeeProductRepository.findEmployeesAndProductsByCompanyId(companyId));
 
-       Map<String,List<Product>> result = groupProductsByEmployee(employeeProducts);
+       Map<String,List<ProductDTO>> result = groupProductsByEmployee(employeeProducts);
 
         return result;
     }
 
 
-    private Map<String,List<Product>> groupProductsByEmployee(List<EmployeeProductDTO> employeeProducts){
+    private Map<String,List<ProductDTO>> groupProductsByEmployee(List<EmployeeProductDTO> employeeProducts){
 
-        Map<String,List<Product>> result =new HashMap<>();
+        Map<String,List<ProductDTO>> result = new HashMap<>();
 
         for(EmployeeProductDTO employeeProduct: employeeProducts){
             String fullName = employeeProduct.getEmployee().getName() + " " + employeeProduct.getEmployee().getSurname();
-            Product product = employeeProduct.getProduct();
+            ProductDTO product = employeeProduct.getProduct();
 
             if(result.containsKey(fullName)){
-                List<Product> products = result.get(fullName);
+                List<ProductDTO> products = result.get(fullName);
                 products.add(product);
             }
             else{
-                List<Product> products = new ArrayList<>();
+                List<ProductDTO> products = new ArrayList<>();
                 products.add(product);
                 result.put(fullName, products);
             }

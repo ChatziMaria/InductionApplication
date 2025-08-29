@@ -30,4 +30,5 @@ public class Bonus {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
+
 }
