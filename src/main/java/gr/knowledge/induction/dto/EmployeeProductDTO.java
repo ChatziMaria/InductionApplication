@@ -1,6 +1,7 @@
 package gr.knowledge.induction.dto;
 
 import gr.knowledge.induction.domain.Employee;
+import gr.knowledge.induction.domain.EmployeeProduct;
 import lombok.*;
 import org.springframework.beans.BeanMetadataAttribute;
 
@@ -8,9 +9,9 @@ import org.springframework.beans.BeanMetadataAttribute;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(builderMethodName = "employeeProductDtoBuilder")
 
-public class EmployeeProductDTO {
+public class EmployeeProductDTO extends EmployeeProduct {
 
     private Long id;
     private EmployeeDTO employee;

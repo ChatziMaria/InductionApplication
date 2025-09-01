@@ -1,14 +1,15 @@
 package gr.knowledge.induction.dto;
 
+import gr.knowledge.induction.domain.Company;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(builderMethodName = "companyDtoBuilder")
 
-public class CompanyDTO {
+public class CompanyDTO extends Company {
 
     private Long id;
     private String name;

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(builderMethodName = "employeeDtoBuilder")
 
 public class EmployeeDTO extends Employee {
 
@@ -23,6 +23,7 @@ public class EmployeeDTO extends Employee {
     private Integer vacationDays;
     private BigDecimal salary;
     private String employmentType;
+
     private CompanyDTO company;
 
     public Long getId() {

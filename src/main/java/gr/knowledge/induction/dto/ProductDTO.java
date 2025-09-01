@@ -1,19 +1,27 @@
 package gr.knowledge.induction.dto;
 
+import gr.knowledge.induction.domain.Product;
 import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(builderMethodName = "productDtoBuilder")
 
-public class ProductDTO {
+public class ProductDTO extends Product {
 
     private Long id;
     private String name;
     private String description;
     private String barcode;
+
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@Builder(builderMethodName = "vacationRequestDtoBuilder")
 
 public class VacationRequestDTO extends VacationRequest {
 
