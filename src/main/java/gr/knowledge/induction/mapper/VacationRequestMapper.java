@@ -1,5 +1,6 @@
 package gr.knowledge.induction.mapper;
 
+import gr.knowledge.induction.annotation.MapperBean;
 import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.VacationRequest;
 import gr.knowledge.induction.dto.BonusDTO;
@@ -7,6 +8,7 @@ import gr.knowledge.induction.dto.VacationRequestDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@MapperBean
 public class VacationRequestMapper extends BaseMapper<VacationRequest, VacationRequestDTO>{
 
     private  final ModelMapper modelMapper;
