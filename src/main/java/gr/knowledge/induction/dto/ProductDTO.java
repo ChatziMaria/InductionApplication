@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder(builderMethodName = "productDtoBuilder")
 
-public class ProductDTO extends Product {
+public class ProductDTO{
 
     private Long id;
     private String name;

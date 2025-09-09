@@ -12,7 +12,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-
+@Table(name = "company")
 public class Company {
 
     @Id

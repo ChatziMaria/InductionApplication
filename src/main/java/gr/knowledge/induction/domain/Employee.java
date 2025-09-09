@@ -15,6 +15,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
+@Table(name = "employee")
 public class Employee {
 
     @Id
@@ -43,7 +44,7 @@ public class Employee {
     @Column(name = "employment_type", nullable = false, length = 20)
     private String employmentType;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 

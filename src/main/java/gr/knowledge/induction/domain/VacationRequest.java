@@ -1,5 +1,6 @@
 package gr.knowledge.induction.domain;
 
+import gr.knowledge.induction.enums.VacationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
+@Table(name = "vacation_request")
 public class VacationRequest {
 
 
@@ -29,7 +31,7 @@ public class VacationRequest {
     @Column(name = "days", nullable = false)
     private Integer days;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 

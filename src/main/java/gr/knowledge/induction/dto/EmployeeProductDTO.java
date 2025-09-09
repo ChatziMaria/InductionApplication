@@ -11,7 +11,7 @@ import org.springframework.beans.BeanMetadataAttribute;
 @Setter
 @Builder(builderMethodName = "employeeProductDtoBuilder")
 
-public class EmployeeProductDTO extends EmployeeProduct {
+public class EmployeeProductDTO{
 
     private Long id;
     private EmployeeDTO employee;

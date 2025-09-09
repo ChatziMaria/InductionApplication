@@ -3,6 +3,7 @@ package gr.knowledge.induction.service;
 import gr.knowledge.induction.domain.Bonus;
 import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.dto.BonusDTO;
+import gr.knowledge.induction.enums.Seasons;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,8 +21,8 @@ public interface BonusService {
 
     void deleteBonus(Long id);
 
-    BigDecimal bonusCalculation(String season, BigDecimal salary);
+    BigDecimal bonusCalculation(Seasons season, BigDecimal salary);
 
-    List<BonusDTO> bonusesForCompany(Long companyId, String season);
+    List<BonusDTO> bonusesForCompany(Long companyId, Seasons season);
 
 }

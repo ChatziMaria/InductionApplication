@@ -9,7 +9,7 @@ import lombok.*;
 @Setter
 @Builder(builderMethodName = "companyDtoBuilder")
 
-public class CompanyDTO extends Company {
+public class CompanyDTO {
 
     private Long id;
     private String name;

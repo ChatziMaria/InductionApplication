@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 @Setter
-
+@Table(name = "bonus")
 public class Bonus {
 
     @Id
@@ -26,7 +26,7 @@ public class Bonus {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Setter
 @Builder(builderMethodName = "employeeDtoBuilder")
 
-public class EmployeeDTO extends Employee {
+public class EmployeeDTO  {
 
     private Long id;
     private String name;

@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-
+@Table(name = "product")
 public class Product {
 
     @Id

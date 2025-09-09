@@ -1,10 +1,9 @@
 package gr.knowledge.induction.service.impl;
 
 import gr.knowledge.induction.domain.Employee;
-import gr.knowledge.induction.domain.VacationRequest;
-import gr.knowledge.induction.domain.VacationStatus;
 import gr.knowledge.induction.dto.EmployeeDTO;
 import gr.knowledge.induction.dto.VacationRequestDTO;
+import gr.knowledge.induction.enums.VacationStatus;
 import gr.knowledge.induction.mapper.VacationRequestMapper;
 import gr.knowledge.induction.repository.VacationRequestRepository;
 import gr.knowledge.induction.service.EmployeeService;
@@ -20,6 +19,11 @@ import java.util.function.BiConsumer;
 
 import static java.lang.Integer.valueOf;
 
+/**
+ * Υλοποίηση της υπηρεσίας VacationRequestService.
+ * Παρέχει λειτουργίες δημιουργίας, ανάκτησης, ενημέρωσης, διαγραφής
+ * και διαχείρισης αιτήσεων άδειας εργαζομένων.
+ */
 @Service
 public class VacationRequestServiceImpl implements VacationRequestService {
 
@@ -31,6 +35,13 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     private final Map<VacationStatus, BiConsumer<VacationRequestDTO, EmployeeDTO>> vacationActions;
 
+    /**
+     * Κατασκευαστής για την έγχυση των εξαρτήσεων της υπηρεσίας.
+     *
+     * @param vacationRequestRepository το repository για αιτήσεις άδειας
+     * @param employeeService           η υπηρεσία εργαζομένων
+     * @param vacationRequestMapper     ο mapper για μετατροπή μεταξύ entity και DTO
+     */
     public VacationRequestServiceImpl(VacationRequestRepository vacationRequestRepository, EmployeeService employeeService, VacationRequestMapper vacationRequestMapper) {
         this.vacationRequestRepository = vacationRequestRepository;
         this.vacationRequestMapper = vacationRequestMapper;
@@ -42,14 +53,21 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         );
     }
 
-
+    /**
+     * Δημιουργεί μια νέα αίτηση άδειας.
+     *
+     * @param vacationRequest το αντικείμενο DTO που περιγράφει την αίτηση
+     * @param holidays        λίστα με αργίες που δεν υπολογίζονται στα αιτούμενα ημέρες
+     * @return το δημιουργημένο VacationRequestDTO
+     * @throws IllegalArgumentException αν η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης
+     */
     @Override
     public VacationRequestDTO createVacationRequest(VacationRequestDTO vacationRequest, List<LocalDate> holidays) {
 
         LocalDate start = vacationRequest.getStartDate();
         LocalDate end   = vacationRequest.getEndDate();
         Long employeeId = vacationRequest.getEmployee().getId();
-        Employee employee = vacationRequest.getEmployee();
+        EmployeeDTO employee = vacationRequest.getEmployee();
 
         checkDates(employeeId, start, end);
         processingRequest(vacationRequest, holidays);
@@ -57,7 +75,15 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
 
-    private void  checkDates(Long employee, LocalDate startDate, LocalDate endDate) {
+    /**
+     * Ελέγχει τις ημερομηνίες της αίτησης για επικαλύψεις ή λανθασμένη σειρά.
+     *
+     * @param employeeId το ID του εργαζομένου
+     * @param startDate  ημερομηνία έναρξης
+     * @param endDate    ημερομηνία λήξης
+     * @throws IllegalArgumentException αν η λήξη είναι πριν την έναρξη ή αν υπάρχει επικαλυπτόμενη αίτηση
+     */
+    private void  checkDates(Long employeeId, LocalDate startDate, LocalDate endDate) {
 
         if (endDate.isBefore(startDate)) {
             throw new IllegalArgumentException("Η ημερομηνία λήξης είναι πριν την ημερομηνία έναρξης!");
@@ -65,13 +91,19 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
         //αν εχουμε απο το query εστω και ενα count exception και ελεγχοσ status
 
-        Integer result = vacationRequestRepository.countOfOverlappingRequests(employee, List.of(VacationStatus.PENDING , VacationStatus.APPROVED), startDate, endDate);
+        Integer result = vacationRequestRepository.countOfOverlappingRequests(employeeId, List.of(VacationStatus.PENDING , VacationStatus.APPROVED), startDate, endDate);
         if (result > 0) {
              throw new IllegalArgumentException();
         }
     }
 
-    //Αφαιρει τισ μερες που ειναι αργιεσ η σαββατοκυριακα και κανει pending
+    /**
+     * Επεξεργάζεται την αίτηση αφαιρώντας σαββατοκύριακα και αργίες
+     * και θέτει την κατάσταση σε PENDING.
+     *
+     * @param vacationRequest η αίτηση άδειας
+     * @param holidays        λίστα αργιών
+     */
     private void processingRequest(VacationRequestDTO vacationRequest, List<LocalDate> holidays ){
         int availableDays = vacationRequest.getEmployee().getVacationDays();
         int requestedDays = vacationRequest.getDays();
@@ -101,18 +133,36 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     }
 
-
+    /**
+     * Επιστρέφει όλες τις αιτήσεις άδειας.
+     *
+     * @return λίστα VacationRequestDTO
+     */
     @Override
     public List<VacationRequestDTO> getAllVacationRequests() {
         return vacationRequestMapper.toDTO(vacationRequestRepository.findAll());
     }
 
+    /**
+     * Επιστρέφει μια αίτηση άδειας με βάση το ID.
+     *
+     * @param id το ID της αίτησης
+     * @return VacationRequestDTO
+     * @throws EntityNotFoundException αν δεν βρεθεί η αίτηση
+     */
     @Override
     public VacationRequestDTO getVacationRequestById(Long id) {
         return vacationRequestMapper.toDTO(vacationRequestRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException()));
     }
 
+    /**
+     * Ενημερώνει μια αίτηση άδειας.
+     *
+     * @param id              το ID της αίτησης
+     * @param vacationRequest τα ενημερωμένα δεδομένα
+     * @return το ενημερωμένο VacationRequestDTO
+     */
     @Override
     public VacationRequestDTO updateVacationRequest(Long id, VacationRequestDTO vacationRequest) {
 
@@ -122,6 +172,12 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(currentVacationRequest)));
     }
 
+    /**
+     * Διαγράφει μια αίτηση άδειας.
+     *
+     * @param id το ID της αίτησης
+     * @throws EntityNotFoundException αν δεν βρεθεί η αίτηση
+     */
     @Override
     public void deleteVacationRequest(Long id) {
         VacationRequestDTO vacationRequest = vacationRequestMapper.toDTO(vacationRequestRepository.findById(id)
@@ -132,6 +188,13 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         vacationRequestRepository.deleteById(id);
     }
 
+    /**
+     * Δημιουργεί και αποθηκεύει νέα αίτηση άδειας θέτοντας την κατάσταση σε PENDING,
+     * ελέγχοντας τα όρια ημερών.
+     *
+     * @param vacationRequest η αίτηση άδειας
+     * @return το αποθηκευμένο VacationRequestDTO
+     */
     @Override
     public VacationRequestDTO requestVacation(VacationRequestDTO vacationRequest) {
         Long employeeId = vacationRequest.getEmployee().getId();
@@ -155,7 +218,13 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
 
-
+    /**
+     * Χειρίζεται μια αίτηση άδειας εγκρίνοντας ή απορρίπτοντας
+     * με βάση τις διαθέσιμες ημέρες του εργαζομένου.
+     *
+     * @param vacationRequest η αίτηση άδειας προς επεξεργασία
+     * @return το ενημερωμένο VacationRequestDTO
+     */
     @Override
     public VacationRequestDTO handleRequest(VacationRequestDTO vacationRequest){
 
@@ -178,8 +247,13 @@ public class VacationRequestServiceImpl implements VacationRequestService {
         vacationActions.get(status).accept(vacationRequest, employee);
         return vacationRequestMapper.toDTO(vacationRequestRepository.save(vacationRequestMapper.toEntity(vacationRequest)));
     }
-    
 
+    /**
+     * Εγκρίνει μια αίτηση άδειας και ενημερώνει τον εργαζόμενο.
+     *
+     * @param vacationRequest η αίτηση άδειας
+     * @param employee        ο εργαζόμενος
+     */
     private void acceptRequest(VacationRequestDTO vacationRequest, EmployeeDTO employee){
 
         vacationRequest.setStatus(VacationStatus.APPROVED);
@@ -187,6 +261,12 @@ public class VacationRequestServiceImpl implements VacationRequestService {
 
     }
 
+    /**
+     * Απορρίπτει μια αίτηση άδειας και επιστρέφει τις ημέρες στον εργαζόμενο.
+     *
+     * @param vacationRequest η αίτηση άδειας
+     * @param employee        ο εργαζόμενος
+     */
     private void rejectRequest(VacationRequestDTO vacationRequest, EmployeeDTO employee){
 
         int availableDays = employee.getVacationDays();

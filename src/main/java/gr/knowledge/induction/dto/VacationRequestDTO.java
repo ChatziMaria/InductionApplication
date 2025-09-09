@@ -1,8 +1,7 @@
 package gr.knowledge.induction.dto;
 
-import gr.knowledge.induction.domain.Employee;
 import gr.knowledge.induction.domain.VacationRequest;
-import gr.knowledge.induction.domain.VacationStatus;
+import gr.knowledge.induction.enums.VacationStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Setter
 @Builder(builderMethodName = "vacationRequestDtoBuilder")
 
-public class VacationRequestDTO extends VacationRequest {
+public class VacationRequestDTO{
 
     private Long id;
     private LocalDate startDate;

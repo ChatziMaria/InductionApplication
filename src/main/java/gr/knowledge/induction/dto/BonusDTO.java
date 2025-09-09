@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Builder(builderMethodName = "BonusDtoBuilder")
 @Getter
 @Setter
-public class BonusDTO extends Bonus {
+public class BonusDTO{
 
     private Long id;
     private BigDecimal amount;
